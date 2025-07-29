@@ -1,0 +1,22 @@
+<% if @product.persisted? && @product.images.attached? %>
+  <div class="mt-4">
+    <h6>Current Images:</h6>
+    <div class="row" id="current-images">
+      <% @product.images.each_with_index do |image, index| %>
+        <div class="col-md-3 mb-3" id="image-<%= image.id %>">
+          <div class="card">
+            <div class="card-body p-2">
+              <%= image_tag image, class: "img-fluid rounded mb-2", style: "width: 100%; height: 150px; object-fit: cover;" %>
+              <%= button_to "Remove",
+                           admin_product_remove_image_path(@product, image_id: image.id),
+                           method: :delete,
+                           class: "btn btn-sm btn-outline-danger w-100",
+                           confirm: "Remove this image?",
+                           remote: true %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

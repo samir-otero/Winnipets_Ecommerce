@@ -34,6 +34,25 @@ class Admin::ProductsController < Admin::ApplicationController
     @categories = Category.all
   end
 
+  def remove_image
+    image = @product.images.find(params[:image_id])
+    image.purge
+
+    respond_to do |format|
+      format.json { render json: { success: true } }
+      format.html {
+        flash[:notice] = "Image removed successfully."
+        redirect_to edit_admin_product_path(@product)
+      }
+    end
+  end
+
+  private
+
+  def set_product
+    @product = Product.find(params[:id])
+  end
+
   def update
     @categories = Category.all
 

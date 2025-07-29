@@ -9,6 +9,9 @@ Rails.application.routes.draw do
     delete 'logout', to: 'sessions#destroy'
     get 'dashboard', to: 'dashboard#index'
     root 'dashboard#index' # admin root goes to dashboard
+    resources :products do
+      delete :remove_image, on: :member
+    end
 
     # Admin resources (we'll add more later)
     resources :products
