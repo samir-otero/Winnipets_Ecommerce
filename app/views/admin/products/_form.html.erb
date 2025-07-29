@@ -1,0 +1,191 @@
+<%= form_with model: [:admin, @product], local: true, multipart: true, class: "needs-validation", novalidate: true do |form| %>
+  <% if @product.errors.any? %>
+    <div class="alert alert-danger">
+      <h6>Please fix the following errors:</h6>
+      <ul class="mb-0">
+        <% @product.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="row">
+    <div class="col-md-8">
+      <!-- Basic Information -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Basic Information</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <%= form.label :name, class: "form-label" %>
+            <%= form.text_field :name, class: "form-control #{'is-invalid' if @product.errors[:name].any?}", required: true %>
+            <div class="invalid-feedback">
+              <%= @product.errors[:name].first || "Please provide a product name." %>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <%= form.label :description, class: "form-label" %>
+            <%= form.text_area :description, rows: 5, class: "form-control #{'is-invalid' if @product.errors[:description].any?}", required: true %>
+            <div class="form-text">Provide a detailed description of the product.</div>
+            <div class="invalid-feedback">
+              <%= @product.errors[:description].first || "Please provide a product description." %>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <%= form.label :category_id, "Category", class: "form-label" %>
+                <%= form.select :category_id,
+                               options_from_collection_for_select(@categories, :id, :name, @product.category_id),
+                               { prompt: "Select a category" },
+                               { class: "form-select #{'is-invalid' if @product.errors[:category_id].any?}", required: true } %>
+                <div class="invalid-feedback">
+                  <%= @product.errors[:category_id].first || "Please select a category." %>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <%= form.label :sku, "SKU", class: "form-label" %>
+                <%= form.text_field :sku, class: "form-control #{'is-invalid' if @product.errors[:sku].any?}", required: true %>
+                <div class="form-text">Unique product identifier.</div>
+                <div class="invalid-feedback">
+                  <%= @product.errors[:sku].first || "Please provide a unique SKU." %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Images -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Product Images</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <%= form.label :images, "Upload Images", class: "form-label" %>
+            <%= form.file_field :images, multiple: true, accept: "image/*", class: "form-control" %>
+            <div class="form-text">You can select multiple images. Supported formats: JPG, PNG, GIF.</div>
+          </div>
+
+          <% if @product.persisted? && @product.images.attached? %>
+            <div class="mt-3">
+              <h6>Current Images:</h6>
+              <div class="row">
+                <% @product.images.each do |image| %>
+                  <div class="col-md-3 mb-3">
+                    <%= image_tag image, class: "img-fluid rounded" %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <!-- Pricing -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Pricing</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <%= form.label :price, "Regular Price", class: "form-label" %>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              <%= form.number_field :price, step: 0.01, min: 0, class: "form-control #{'is-invalid' if @product.errors[:price].any?}", required: true %>
+              <div class="invalid-feedback">
+                <%= @product.errors[:price].first || "Please provide a valid price." %>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <%= form.label :sale_price, "Sale Price (Optional)", class: "form-label" %>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              <%= form.number_field :sale_price, step: 0.01, min: 0, class: "form-control #{'is-invalid' if @product.errors[:sale_price].any?}" %>
+              <div class="invalid-feedback">
+                <%= @product.errors[:sale_price].first %>
+              </div>
+            </div>
+            <div class="form-text">Leave blank if not on sale.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inventory -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Inventory</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <%= form.label :stock_quantity, "Stock Quantity", class: "form-label" %>
+            <%= form.number_field :stock_quantity, min: 0, class: "form-control #{'is-invalid' if @product.errors[:stock_quantity].any?}", required: true %>
+            <div class="invalid-feedback">
+              <%= @product.errors[:stock_quantity].first || "Please provide stock quantity." %>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <%= form.label :weight, "Weight (kg) - Optional", class: "form-label" %>
+            <%= form.number_field :weight, step: 0.001, min: 0, class: "form-control #{'is-invalid' if @product.errors[:weight].any?}" %>
+            <div class="invalid-feedback">
+              <%= @product.errors[:weight].first %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Status</h5>
+        </div>
+        <div class="card-body">
+          <div class="form-check">
+            <%= form.check_box :is_active, class: "form-check-input" %>
+            <%= form.label :is_active, "Product is active", class: "form-check-label" %>
+            <div class="form-text">Inactive products won't be visible to customers.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="card">
+        <div class="card-body">
+          <%= form.submit class: "btn btn-primary w-100 mb-2" %>
+          <%= link_to "Cancel", admin_products_path, class: "btn btn-outline-secondary w-100" %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<script>
+// Bootstrap form validation
+(function() {
+  'use strict';
+  window.addEventListener('load', function() {
+    var forms = document.getElementsByClassName('needs-validation');
+    var validation = Array.prototype.filter.call(forms, function(form) {
+      form.addEventListener('submit', function(event) {
+        if (form.checkValidity() === false) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  }, false);
+})();
+</script>

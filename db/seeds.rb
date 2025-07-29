@@ -62,3 +62,75 @@ puts "Seeded #{Province.count} provinces"
 puts "Seeded #{Category.count} categories"
 puts "Created admin user: #{AdminUser.first&.email}"
 puts "Created #{Page.count} pages"
+
+# Create sample products
+if Category.any?
+  winter_gear = Category.find_by(name: "Winter Gear")
+  natural_treats = Category.find_by(name: "Natural Treats")
+  grooming = Category.find_by(name: "Grooming Supplies")
+  farm_care = Category.find_by(name: "Farm Animal Care")
+
+  sample_products = [
+    {
+      name: "Manitoba Winter Dog Coat",
+      description: "Heavy-duty winter coat designed for Manitoba's harsh winters. Features waterproof outer shell and thermal insulation.",
+      price: 89.99,
+      sale_price: 69.99,
+      stock_quantity: 25,
+      sku: "WC-MB-001",
+      weight: 0.8,
+      category: winter_gear
+    },
+    {
+      name: "Prairie Beef Treats",
+      description: "All-natural beef treats made from grass-fed Manitoba cattle. No preservatives or artificial ingredients.",
+      price: 24.99,
+      stock_quantity: 50,
+      sku: "PT-BEEF-001",
+      weight: 0.5,
+      category: natural_treats
+    },
+    {
+      name: "Professional Grooming Brush Set",
+      description: "Complete set of professional grooming brushes suitable for all coat types. Includes slicker brush, pin brush, and undercoat rake.",
+      price: 79.99,
+      stock_quantity: 15,
+      sku: "GS-BRUSH-001",
+      weight: 1.2,
+      category: grooming
+    },
+    {
+      name: "Heated Water Bowl",
+      description: "Prevents water from freezing in cold Manitoba winters. Safe for outdoor use with chew-resistant cord.",
+      price: 149.99,
+      stock_quantity: 8,
+      sku: "WG-BOWL-001",
+      weight: 2.5,
+      category: winter_gear
+    },
+    {
+      name: "Livestock Feed Supplement",
+      description: "Vitamin and mineral supplement for cattle and horses. Formulated for prairie conditions.",
+      price: 45.99,
+      stock_quantity: 30,
+      sku: "FC-SUPP-001",
+      weight: 5.0,
+      category: farm_care
+    }
+  ]
+
+  sample_products.each do |product_data|
+    Product.find_or_create_by(sku: product_data[:sku]) do |product|
+      product.name = product_data[:name]
+      product.description = product_data[:description]
+      product.price = product_data[:price]
+      product.sale_price = product_data[:sale_price]
+      product.stock_quantity = product_data[:stock_quantity]
+      product.weight = product_data[:weight]
+      product.category = product_data[:category]
+      product.is_active = true
+    end
+  end
+
+  puts "Created #{Product.count} products"
+end
