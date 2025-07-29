@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
-  # Root route (we'll create this later)
-  root 'home#index'
+
+  # Customer-facing routes
+  root 'products#index'  # Main homepage (✯ 2.1)
+  resources :products, only: [:index, :show]
 
   # Admin routes
   namespace :admin do

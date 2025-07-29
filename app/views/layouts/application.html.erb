@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Winnipets Ecommerce" %></title>
+    <title><%= content_for(:title) || "Winnipets - Premium Pet Supplies for Manitoba" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
@@ -10,19 +10,142 @@
 
     <%= yield :head %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
   <body>
-    <%= yield %>
+    <!-- Navigation Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+      <div class="container">
+        <%= link_to root_path, class: "navbar-brand fw-bold" do %>
+          <i class="bi bi-heart-fill me-2"></i>Winnipets
+        <% end %>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <%= link_to "All Products", products_path,
+                         class: "nav-link #{'active' if current_page?(products_path)}" %>
+            </li>
+
+            <!-- Category Dropdown -->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                Categories
+              </a>
+              <ul class="dropdown-menu">
+                <%= link_to "All Categories", products_path, class: "dropdown-item" %>
+                <li><hr class="dropdown-divider"></li>
+                <% Category.joins(:products).where(products: { is_active: true }).distinct.each do |category| %>
+                  <li>
+                    <%= link_to products_path(category_id: category.id), class: "dropdown-item" do %>
+                      <%= category.name %>
+                    <% end %>
+                  </li>
+                <% end %>
+              </ul>
+            </li>
+          </ul>
+
+          <!-- Search Form -->
+          <%= form_with url: products_path, method: :get, local: true, class: "d-flex me-3" do |form| %>
+            <%= form.text_field :search, placeholder: "Search products...",
+                               value: params[:search],
+                               class: "form-control me-2",
+                               style: "width: 250px;" %>
+            <%= form.submit "Search", class: "btn btn-outline-light" %>
+          <% end %>
+
+          <!-- User Actions -->
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="bi bi-cart3"></i>
+                Cart <span class="badge bg-light text-dark">0</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="bi bi-person"></i>
+                Account
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <% if notice %>
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <%= notice %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    <% end %>
+
+    <% if alert %>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <%= alert %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    <% end %>
+
+    <!-- Main Content -->
+    <main>
+      <%= yield %>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-5 mt-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <h5><i class="bi bi-heart-fill me-2"></i>Winnipets</h5>
+            <p class="text-muted">Premium pet supplies designed for Manitoba's climate. Serving the pet community for 8 years.</p>
+          </div>
+          <div class="col-md-4">
+            <h6>Quick Links</h6>
+            <ul class="list-unstyled">
+              <li><%= link_to "All Products", products_path, class: "text-muted text-decoration-none" %></li>
+              <li><a href="#" class="text-muted text-decoration-none">About Us</a></li>
+              <li><a href="#" class="text-muted text-decoration-none">Contact</a></li>
+              <li><a href="#" class="text-muted text-decoration-none">Shipping Info</a></li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <h6>Contact Info</h6>
+            <p class="text-muted mb-1">
+              <i class="bi bi-geo-alt me-2"></i>Portage Avenue, Winnipeg, MB
+            </p>
+            <p class="text-muted mb-1">
+              <i class="bi bi-telephone me-2"></i>(204) 555-PETS
+            </p>
+            <p class="text-muted">
+              <i class="bi bi-envelope me-2"></i>hello@winnipets.ca
+            </p>
+          </div>
+        </div>
+        <hr class="my-4">
+        <div class="text-center text-muted">
+          <p>&copy; <%= Date.current.year %> Winnipets. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

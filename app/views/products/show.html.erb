@@ -1,0 +1,247 @@
+<% content_for :title, "#{@product.name} - Winnipets" %>
+
+<!-- Breadcrumb Navigation -->
+<nav aria-label="breadcrumb" class="py-3 bg-light">
+  <div class="container">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item">
+        <%= link_to "Home", root_path, class: "text-decoration-none" %>
+      </li>
+      <li class="breadcrumb-item">
+        <%= link_to @product.category.name,
+                   products_path(category_id: @product.category.id),
+                   class: "text-decoration-none" %>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        <%= @product.name %>
+      </li>
+    </ol>
+  </div>
+</nav>
+
+<!-- Product Details -->
+<section class="py-5">
+  <div class="container">
+    <div class="row">
+      <!-- Product Images -->
+      <div class="col-md-6">
+        <% if @product.images.attached? %>
+          <!-- Main Image -->
+          <div class="mb-3">
+            <img id="mainImage"
+                 src="<%= url_for(@product.images.first) %>"
+                 class="img-fluid rounded shadow"
+                 alt="<%= @product.name %>"
+                 style="width: 100%; height: 400px; object-fit: cover;">
+          </div>
+
+          <!-- Thumbnail Images -->
+          <% if @product.images.count > 1 %>
+            <div class="row">
+              <% @product.images.each_with_index do |image, index| %>
+                <div class="col-3 mb-2">
+                  <img src="<%= url_for(image) %>"
+                       class="img-fluid rounded thumbnail-image <%= 'active' if index == 0 %>"
+                       alt="<%= @product.name %> view <%= index + 1 %>"
+                       style="height: 80px; object-fit: cover; cursor: pointer;"
+                       onclick="changeMainImage('<%= url_for(image) %>', this)">
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="bg-light rounded d-flex align-items-center justify-content-center shadow"
+               style="height: 400px;">
+            <i class="bi bi-image text-muted display-1"></i>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Product Information -->
+      <div class="col-md-6">
+        <!-- Category Badge -->
+        <div class="mb-2">
+          <%= link_to products_path(category_id: @product.category.id),
+                     class: "badge bg-secondary text-decoration-none" do %>
+            <%= @product.category.name %>
+          <% end %>
+        </div>
+
+        <!-- Product Name -->
+        <h1 class="h2 mb-3"><%= @product.name %></h1>
+
+        <!-- SKU -->
+        <p class="text-muted mb-3">
+          <strong>SKU:</strong> <code><%= @product.sku %></code>
+        </p>
+
+        <!-- Price -->
+        <div class="mb-4">
+          <% if @product.on_sale? %>
+            <span class="text-muted text-decoration-line-through h4">
+              $<%= number_with_precision(@product.price, precision: 2) %>
+            </span>
+            <strong class="text-danger h2 ms-2">
+              $<%= number_with_precision(@product.current_price, precision: 2) %>
+            </strong>
+            <span class="badge bg-danger ms-2">SALE</span>
+          <% else %>
+            <strong class="h2 text-primary">
+              $<%= number_with_precision(@product.current_price, precision: 2) %>
+            </strong>
+          <% end %>
+        </div>
+
+        <!-- Stock Status -->
+        <div class="mb-4">
+          <% if @product.stock_quantity > 10 %>
+            <div class="alert alert-success py-2">
+              <i class="bi bi-check-circle me-2"></i>
+              <strong>In Stock</strong> - Ready to ship
+            </div>
+          <% elsif @product.stock_quantity > 0 %>
+            <div class="alert alert-warning py-2">
+              <i class="bi bi-exclamation-circle me-2"></i>
+              <strong>Low Stock</strong> - Only <%= @product.stock_quantity %> left
+            </div>
+          <% else %>
+            <div class="alert alert-danger py-2">
+              <i class="bi bi-x-circle me-2"></i>
+              <strong>Out of Stock</strong> - Currently unavailable
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Add to Cart Form -->
+        <% if @product.stock_quantity > 0 %>
+          <div class="card mb-4">
+            <div class="card-body">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <label for="quantity" class="form-label">Quantity:</label>
+                  <input type="number"
+                         class="form-control"
+                         id="quantity"
+                         value="1"
+                         min="1"
+                         max="<%= @product.stock_quantity %>">
+                </div>
+                <div class="col-8">
+                  <button class="btn btn-primary btn-lg w-100">
+                    <i class="bi bi-cart-plus me-2"></i>Add to Cart
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Product Features -->
+        <div class="mb-4">
+          <ul class="list-unstyled">
+            <li class="mb-2">
+              <i class="bi bi-truck text-primary me-2"></i>
+              Free shipping on orders over $75
+            </li>
+            <li class="mb-2">
+              <i class="bi bi-shield-check text-primary me-2"></i>
+              Quality guaranteed
+            </li>
+            <li class="mb-2">
+              <i class="bi bi-geo-alt text-primary me-2"></i>
+              Made for Manitoba's climate
+            </li>
+            <% if @product.weight.present? %>
+              <li class="mb-2">
+                <i class="bi bi-box text-primary me-2"></i>
+                Weight: <%= @product.weight %> kg
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Description -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h3>Product Description</h3>
+          </div>
+          <div class="card-body">
+            <p class="lead"><%= simple_format(@product.description) %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Products -->
+    <% if @related_products.any? %>
+      <div class="row mt-5">
+        <div class="col-12">
+          <h3 class="mb-4">Related Products</h3>
+          <div class="row">
+            <% @related_products.each do |product| %>
+              <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                  <% if product.images.attached? %>
+                    <%= link_to product_path(product) do %>
+                      <%= image_tag product.images.first,
+                                    class: "card-img-top",
+                                    style: "height: 150px; object-fit: cover;" %>
+                    <% end %>
+                  <% else %>
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
+                         style="height: 150px;">
+                      <i class="bi bi-image text-muted"></i>
+                    </div>
+                  <% end %>
+
+                  <div class="card-body d-flex flex-column">
+                    <h6 class="card-title">
+                      <%= link_to product.name, product_path(product),
+                                 class: "text-decoration-none" %>
+                    </h6>
+                    <div class="mt-auto">
+                      <strong class="text-primary">
+                        $<%= number_with_precision(product.current_price, precision: 2) %>
+                      </strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<!-- JavaScript for Image Gallery -->
+<script>
+function changeMainImage(imageSrc, thumbnailElement) {
+  // Update main image
+  document.getElementById('mainImage').src = imageSrc;
+
+  // Update active thumbnail
+  document.querySelectorAll('.thumbnail-image').forEach(img => {
+    img.classList.remove('active');
+  });
+  thumbnailElement.classList.add('active');
+}
+</script>
+
+<!-- Custom CSS for thumbnails -->
+<style>
+.thumbnail-image {
+  border: 2px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.thumbnail-image:hover,
+.thumbnail-image.active {
+  border-color: #0d6efd;
+}
+</style>
