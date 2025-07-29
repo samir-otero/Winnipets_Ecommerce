@@ -11,7 +11,7 @@ class Product < ApplicationRecord
   validates :stock_quantity, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :sku, presence: true, uniqueness: true
   validates :weight, numericality: { greater_than: 0 }, allow_blank: true
-  validates :acceptable_images
+  validate :acceptable_images
 
   scope :active, -> { where(is_active: true) }
   scope :on_sale, -> { where.not(sale_price: nil) }

@@ -62,6 +62,7 @@
         </div>
       </div>
 
+      <!-- Image Management -->
       <div class="card mb-4">
         <div class="card-header">
           <h5 class="mb-0">Product Images</h5>
@@ -73,8 +74,7 @@
             <div class="form-text">You can select multiple images. Supported formats: JPG, PNG, GIF.
             </div>
           </div>
-
-          <%= render 'image_management' if @product.persisted? %>
+          <%= render 'image_management' %>
         </div>
       </div>
     </div>

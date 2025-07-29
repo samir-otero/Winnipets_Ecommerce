@@ -8,11 +8,10 @@
             <div class="card-body p-2">
               <%= image_tag image, class: "img-fluid rounded mb-2", style: "width: 100%; height: 150px; object-fit: cover;" %>
               <%= button_to "Remove",
-                           admin_product_remove_image_path(@product, image_id: image.id),
+                           remove_image_admin_product_path(@product, image_id: image.id),
                            method: :delete,
                            class: "btn btn-sm btn-outline-danger w-100",
-                           confirm: "Remove this image?",
-                           remote: true %>
+                           data: { confirm: "Remove this image?" } %>
             </div>
           </div>
         </div>

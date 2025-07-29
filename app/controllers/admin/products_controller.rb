@@ -1,5 +1,5 @@
 class Admin::ProductsController < Admin::ApplicationController
-  before_action :set_product, only: [:show, :edit, :update, :destroy]
+  before_action :set_product, only: [:show, :edit, :update, :destroy, :remove_image]
 
   def index
     @products = Product.includes(:category).order(:name)
@@ -38,19 +38,8 @@ class Admin::ProductsController < Admin::ApplicationController
     image = @product.images.find(params[:image_id])
     image.purge
 
-    respond_to do |format|
-      format.json { render json: { success: true } }
-      format.html {
-        flash[:notice] = "Image removed successfully."
-        redirect_to edit_admin_product_path(@product)
-      }
-    end
-  end
-
-  private
-
-  def set_product
-    @product = Product.find(params[:id])
+    flash[:notice] = "Image removed successfully."
+    redirect_to edit_admin_product_path(@product)
   end
 
   def update
