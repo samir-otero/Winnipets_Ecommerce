@@ -1,0 +1,18 @@
+<div class="product-card">
+  <% if product.images.attached? %>
+    <%= image_tag product.images.first, class: "product-image" %>
+  <% end %>
+  <h3><%= link_to product.name, product_path(product) %></h3>
+  <p class="price">
+    <% if product.on_sale? %>
+      <span class="sale-price"><%= number_to_currency(product.sale_price) %></span>
+      <span class="original-price"><%= number_to_currency(product.price) %></span>
+    <% else %>
+      <%= number_to_currency(product.current_price) %>
+    <% end %>
+  </p>
+  <%= form_with url: add_item_cart_path(product), method: :post, remote: true do |form| %>
+    <%= form.hidden_field :quantity, value: 1 %>
+    <%= form.submit "Add to Cart", class: "btn btn-primary" %>
+  <% end %>
+</div>

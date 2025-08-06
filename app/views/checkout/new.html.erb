@@ -228,9 +228,9 @@ document.addEventListener('DOMContentLoaded', function() {
       taxBreakdown.style.display = 'block';
 
       // Update individual tax amounts
-      document.getElementById('gst-amount').textContent = ' + gstAmount.toFixed(2);
-      document.getElementById('pst-amount').textContent = ' + pstAmount.toFixed(2);
-      document.getElementById('hst-amount').textContent = ' + hstAmount.toFixed(2);
+      document.getElementById('gst-amount').textContent = '$' + gstAmount.toFixed(2);
+      document.getElementById('pst-amount').textContent = '$' + pstAmount.toFixed(2);
+      document.getElementById('hst-amount').textContent = '$' + hstAmount.toFixed(2);
 
       // Hide rows for taxes that are 0
       document.getElementById('gst-row').style.display = rates.gst > 0 ? 'flex' : 'none';

@@ -1,129 +1,278 @@
-<div class="container mt-4">
-  <div class="row">
-    <div class="col-12">
-      <h1>Shopping Cart</h1>
+<div class="cart-page">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h1>Shopping Cart</h1>
 
-      <% if current_cart.empty? %>
-        <div class="alert alert-info">
-          <h4>Your cart is empty</h4>
-          <p>Start shopping to add items to your cart.</p>
-          <%= link_to "Continue Shopping", products_path, class: "btn btn-primary" %>
-        </div>
-      <% else %>
-        <div class="table-responsive">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Product</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Total</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% @cart_items.each do |item| %>
-                <tr id="cart-item-<%= item.id %>">
-                  <td>
-                    <div class="d-flex align-items-center">
-                      <% if item.image %>
-                        <%= image_tag item.image, class: "img-thumbnail me-3", style: "width: 80px; height: 80px; object-fit: cover;" %>
-                      <% else %>
-                        <div class="placeholder-image me-3" style="width: 80px; height: 80px; background-color: #f8f9fa; border: 1px solid #dee2e6;"></div>
-                      <% end %>
-                      <div>
-                        <h6 class="mb-0"><%= item.name %></h6>
-                        <small class="text-muted">SKU: <%= item.sku %></small>
-                      </div>
+        <% if @cart_items.empty? %>
+          <div class="empty-cart text-center py-5">
+            <h3>Your cart is empty</h3>
+            <p class="text-muted">Add some products to get started!</p>
+            <%= link_to "Continue Shopping", products_path, class: "btn btn-primary" %>
+          </div>
+        <% else %>
+          <div class="cart-content">
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @cart_items.each do |item| %>
+                    <tr data-product-id="<%= item.id %>" class="cart-item">
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <% if item.image %>
+                            <%= image_tag item.image, class: "me-3 cart-item-image",
+                                         style: "width: 80px; height: 80px; object-fit: cover;" %>
+                          <% else %>
+                            <div class="me-3 cart-item-placeholder"
+                                 style="width: 80px; height: 80px; background-color: #f8f9fa; border: 1px solid #dee2e6; display: flex; align-items: center; justify-content: center;">
+                              <span class="text-muted">No Image</span>
+                            </div>
+                          <% end %>
+                          <div>
+                            <h5 class="mb-1"><%= item.name %></h5>
+                            <small class="text-muted">SKU: <%= item.sku %></small>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="align-middle">
+                        <%= number_to_currency(item.unit_price) %>
+                      </td>
+                      <td class="align-middle">
+                        <%= form_with url: update_quantity_cart_path(item.id), method: :patch,
+                                     local: false, class: "d-flex align-items-center quantity-form" do |f| %>
+                          <%= f.number_field :quantity, value: item.quantity, min: 1, max: 99,
+                                           class: "form-control form-control-sm me-2 quantity-input",
+                                           style: "width: 80px;",
+                                           data: { product_id: item.id } %>
+                          <%= f.submit "Update", class: "btn btn-sm btn-outline-primary update-btn" %>
+                        <% end %>
+                      </td>
+                      <td class="align-middle item-total" data-product-id="<%= item.id %>">
+                        <%= number_to_currency(item.total_price) %>
+                      </td>
+                      <td class="align-middle">
+                        <%= link_to remove_item_cart_path(item.id),
+                                   method: :delete,
+                                   class: "btn btn-sm btn-outline-danger",
+                                   confirm: "Remove #{item.name} from cart?",
+                                   remote: true,
+                                   title: "Remove item" do %>
+                          <i class="bi bi-trash"></i> Remove
+                        <% end %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Cart Summary -->
+            <div class="row mt-4">
+              <div class="col-md-6">
+                <div class="cart-actions">
+                  <%= link_to "Continue Shopping", products_path, class: "btn btn-outline-secondary" %>
+                  <%= link_to clear_cart_path,
+                             method: :delete,
+                             class: "btn btn-outline-warning",
+                             confirm: "Are you sure you want to clear your entire cart?" do %>
+                    Clear Cart
+                  <% end %>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="card">
+                  <div class="card-body">
+                    <h4>Cart Summary</h4>
+                    <div class="d-flex justify-content-between mb-2">
+                      <span>Items:</span>
+                      <span><%= pluralize(@cart_items.sum(&:quantity), 'item') %></span>
                     </div>
-                  </td>
-                  <td><%= number_to_currency(item.unit_price) %></td>
-                  <td>
-                    <%= form_with url: update_cart_path(item.id), method: :patch, local: false, class: "d-flex align-items-center quantity-form" do |f| %>
-                      <%= f.number_field :quantity, value: item.quantity, min: 1, max: 99,
-                                        class: "form-control form-control-sm me-2",
-                                        style: "width: 70px;",
-                                        data: { item_id: item.id } %>
-                      <%= f.submit "Update", class: "btn btn-sm btn-outline-secondary" %>
-                    <% end %>
-                  </td>
-                  <td class="item-total-<%= item.id %>">
-                    <%= number_to_currency(item.total_price) %>
-                  </td>
-                  <td>
-                    <%= link_to remove_from_cart_path(item.id),
-                               method: :delete,
-                               class: "btn btn-sm btn-outline-danger",
-                               data: { confirm: "Remove #{item.name} from cart?" } do %>
-                      <i class="fas fa-trash"></i> Remove
-                    <% end %>
-                  </td>
-                </tr>
-              <% end %>
-            </tbody>
-            <tfoot>
-              <tr>
-                <th colspan="3">Subtotal:</th>
-                <th id="cart-subtotal"><%= number_to_currency(@subtotal) %></th>
-                <th></th>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-
-        <div class="row mt-4">
-          <div class="col-md-6">
-            <%= link_to "Continue Shopping", products_path, class: "btn btn-outline-primary" %>
-            <%= link_to "Clear Cart", clear_cart_path,
-                       method: :delete,
-                       class: "btn btn-outline-danger ms-2",
-                       data: { confirm: "Are you sure you want to clear your cart?" } %>
+                    <div class="d-flex justify-content-between mb-3">
+                      <strong>Subtotal:</strong>
+                      <strong id="cart-subtotal"><%= number_to_currency(@subtotal) %></strong>
+                    </div>
+                    <p class="text-muted small mb-3">
+                      Taxes and shipping will be calculated at checkout
+                    </p>
+                    <%= link_to "Proceed to Checkout", new_checkout_path,
+                               class: "btn btn-primary btn-lg w-100" %>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="col-md-6 text-end">
-            <%= link_to "Proceed to Checkout", checkout_path, class: "btn btn-success btn-lg" %>
-          </div>
-        </div>
-      <% end %>
+        <% end %>
+      </div>
     </div>
   </div>
 </div>
 
+<!-- JavaScript for enhanced cart functionality -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Handle AJAX quantity updates
+  // Handle quantity form submissions via AJAX
   const quantityForms = document.querySelectorAll('.quantity-form');
 
   quantityForms.forEach(form => {
-    const quantityInput = form.querySelector('input[name="quantity"]');
-    const itemId = quantityInput.dataset.itemId;
-
     form.addEventListener('ajax:success', function(event) {
       const response = event.detail[0];
 
       if (response.success) {
-        // Update item total
-        const itemTotalElement = document.querySelector(`.item-total-${itemId}`);
-        if (itemTotalElement) {
+        // Update the item total
+        const productId = form.querySelector('.quantity-input').dataset.productId;
+        const itemTotalElement = document.querySelector(`.item-total[data-product-id="${productId}"]`);
+        if (itemTotalElement && response.item_total) {
           itemTotalElement.textContent = response.item_total;
         }
 
         // Update cart subtotal
         const subtotalElement = document.getElementById('cart-subtotal');
-        if (subtotalElement) {
+        if (subtotalElement && response.subtotal) {
           subtotalElement.textContent = response.subtotal;
         }
 
-        // Update cart count in navigation (if you have it)
-        const cartCountElement = document.querySelector('.cart-count');
-        if (cartCountElement) {
-          cartCountElement.textContent = response.cart_count;
-        }
+        // Update cart count in navigation
+        updateCartCount(response.cart_count);
+
+        showNotification('Cart updated successfully', 'success');
       }
     });
 
     form.addEventListener('ajax:error', function(event) {
-      alert('Error updating quantity. Please try again.');
+      const xhr = event.detail[2];
+      let message = 'Error adding item to cart. Please try again.';
+
+      if (xhr.status === 422) {
+        // Validation errors
+        try {
+          const response = JSON.parse(xhr.responseText);
+          message = response.errors ? response.errors.join(', ') : message;
+        } catch(e) {
+          message = 'Invalid response from server.';
+        }
+      } else if (xhr.status === 404) {
+        message = 'Product not found.';
+      } else if (xhr.status >= 500) {
+        message = 'Server error. Please try again later.';
+      }
+
+      showNotification(message, 'error');
     });
   });
+
+  // Handle remove item links
+  const removeLinks = document.querySelectorAll('a[data-method="delete"][href*="cart/remove"]');
+
+  removeLinks.forEach(link => {
+    link.addEventListener('ajax:success', function(event) {
+      // Remove the table row
+      const row = link.closest('tr');
+      if (row) {
+        row.remove();
+      }
+
+      // Check if cart is now empty
+      const remainingItems = document.querySelectorAll('.cart-item');
+      if (remainingItems.length === 0) {
+        location.reload(); // Reload to show empty cart message
+      } else {
+        // Update cart count and subtotal if provided in response
+        const response = event.detail[0];
+        if (response && response.cart_count !== undefined) {
+          updateCartCount(response.cart_count);
+        }
+      }
+
+      showNotification('Item removed from cart', 'success');
+    });
+
+    link.addEventListener('ajax:error', function(event) {
+      showNotification('Error removing item. Please try again.', 'error');
+    });
+  });
+
+  // Helper functions
+  function updateCartCount(count) {
+    const cartCountElements = document.querySelectorAll('.cart-count');
+    cartCountElements.forEach(element => {
+      element.textContent = count;
+      element.style.display = count > 0 ? 'inline' : 'none';
+    });
+  }
+
+  function showNotification(message, type) {
+    // Remove existing notifications
+    const existingNotifications = document.querySelectorAll('.cart-notification');
+    existingNotifications.forEach(notification => notification.remove());
+
+    // Create new notification
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show cart-notification position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
+    notification.innerHTML = `
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+
+    document.body.appendChild(notification);
+
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.remove();
+      }
+    }, 3000);
+  }
 });
 </script>
+
+<style>
+.cart-page {
+  padding: 2rem 0;
+}
+
+.cart-item-image {
+  border-radius: 8px;
+}
+
+.quantity-input {
+  text-align: center;
+}
+
+.cart-actions {
+  margin-bottom: 1rem;
+}
+
+.empty-cart {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .table-responsive table {
+    font-size: 0.9rem;
+  }
+
+  .cart-item-image,
+  .cart-item-placeholder {
+    width: 60px !important;
+    height: 60px !important;
+  }
+
+  .quantity-input {
+    width: 60px !important;
+  }
+}
+</style>

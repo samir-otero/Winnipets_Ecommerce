@@ -14,6 +14,15 @@ class Order < ApplicationRecord
 
   before_validation :generate_order_number, on: :create
 
+  enum status: {
+    pending: 0,
+    confirmed: 1,
+    processing: 2,
+    shipped: 3,
+    delivered: 4,
+    cancelled: 5
+    }
+
   private
 
   def generate_order_number

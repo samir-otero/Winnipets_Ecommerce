@@ -21,7 +21,6 @@ class Cart
   def update_quantity(product_id, quantity)
     product_id = product_id.to_s
     quantity = quantity.to_i
-
     if quantity <= 0
       remove_item(product_id)
     else
@@ -44,8 +43,8 @@ class Cart
   def cart_items
     return [] if @items.empty?
 
-    Product.where(id: @items.keys).map do |product|
-      CartItem.new(product, @items[product.id.to_s])
+    Product.includes(:images).where(id: @items.keys).map do |product|
+      ::CartItem.new(product, @items[product.id.to_s])
     end
   end
 
@@ -62,21 +61,25 @@ class Cart
 
   def tax_amount(province = nil)
     return 0 unless province
+
     subtotal * province.tax_rate
   end
 
   def gst_amount(province = nil)
     return 0 unless province
+
     subtotal * province.gst_rate
   end
 
   def pst_amount(province = nil)
     return 0 unless province
+
     subtotal * province.pst_rate
   end
 
   def hst_amount(province = nil)
     return 0 unless province
+
     subtotal * province.hst_rate
   end
 end

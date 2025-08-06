@@ -1,4 +1,4 @@
-<%= form_with url: add_to_cart_path(product), method: :post, local: false, class: "add-to-cart-form-simple" do |f| %>
+<%= form_with url: add_item_cart_path(product), method: :post, local: false, class: "add-to-cart-form-simple" do |f| %>
   <%= f.hidden_field :quantity, value: 1 %>
   <%= f.submit "Add to Cart", class: "btn btn-sm btn-outline-primary w-100",
                data: { disable_with: "Adding..." } %>

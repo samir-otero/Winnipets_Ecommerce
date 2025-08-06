@@ -6,7 +6,12 @@ class Address < ApplicationRecord
 
   validates :address_line_1, :city, :postal_code, presence: true
   validates :address_type, presence: true, inclusion: { in: %w[billing shipping both] }
-  validates :postal_code, format: { with: /\A[A-Za-z]\d[A-Za-z] ?\d[A-Za-z]\d\z/, message: "must be valid Canadian postal code" }
+  validates :postal_code, format: {
+    with: /\A[A-Za-z]\d[A-Za-z] ?\d[A-Za-z]\d\z/,
+    message: "must be in Canadian postal code format (e.g., A1A 1A1)"
+  }
+  validates :province, presence: true
+  validates :city, presence: true, length: { minimum: 2 }
 
   def full_address
     "#{address_line_1}, #{address_line_2}, #{city}, #{province.abbreviation} #{postal_code}".gsub(', ,', ',')
