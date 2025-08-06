@@ -14,7 +14,7 @@ Rails.application.routes.draw do
 
   # Checkout routes (✯ 3.1.3)
   get 'checkout', to: 'checkout#new', as: 'new_checkout'
-  post 'checkout', to: 'checkout#create', as: 'create_checkout'
+  post 'checkout', to: 'checkout#create', as: 'checkout'
   get 'checkout/confirmation', to: 'checkout#confirmation', as: 'checkout_confirmation'
   post 'checkout/process', to: 'checkout#process_order', as: 'process_order_checkout'
   get 'orders/:id/confirmation', to: 'checkout#order_confirmation', as: 'order_confirmation'

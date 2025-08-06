@@ -67,11 +67,12 @@ class CheckoutController < ApplicationController
   end
 
   def validate_stock_availability
-  current_cart.cart_items.each do |cart_item|
-    product = cart_item.product
-    if product.stock_quantity < cart_item.quantity
-      flash[:alert] = "#{product.name} has insufficient stock. Only #{product.stock_quantity} available."
-      redirect_to cart_path and return
+    current_cart.cart_items.each do |cart_item|
+      product = cart_item.product
+      if product.stock_quantity < cart_item.quantity
+        flash[:alert] = "#{product.name} has insufficient stock. Only #{product.stock_quantity} available."
+        redirect_to cart_path and return
+      end
     end
   end
 

@@ -43,7 +43,7 @@ class Cart
   def cart_items
     return [] if @items.empty?
 
-    Product.includes(:images).where(id: @items.keys).map do |product|
+    Product.includes(images_attachments: :blob).where(id: @items.keys).map do |product|
       ::CartItem.new(product, @items[product.id.to_s])
     end
   end
