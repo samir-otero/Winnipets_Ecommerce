@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   get 'cart', to: 'cart#show'
   post 'cart/add/:id', to: 'cart#add_item', as: 'add_item_cart'
   delete 'cart/remove/:id', to: 'cart#remove_item', as: 'remove_item_cart'
+  get 'cart/remove/:id', to: 'cart#remove_item'
   patch 'cart/update/:id', to: 'cart#update_quantity', as: 'update_quantity_cart'
   delete 'cart/clear', to: 'cart#clear', as: 'clear_cart'
   get 'cart/clear', to: 'cart#clear'
