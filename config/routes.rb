@@ -1,4 +1,3 @@
-# config/routes.rb
 Rails.application.routes.draw do
 
   # Customer-facing routes
@@ -11,6 +10,7 @@ Rails.application.routes.draw do
   delete 'cart/remove/:id', to: 'cart#remove_item', as: 'remove_item_cart'
   patch 'cart/update/:id', to: 'cart#update_quantity', as: 'update_quantity_cart'
   delete 'cart/clear', to: 'cart#clear', as: 'clear_cart'
+  get 'cart/clear', to: 'cart#clear'
 
   # Checkout routes (✯ 3.1.3)
   get 'checkout', to: 'checkout#new', as: 'new_checkout'

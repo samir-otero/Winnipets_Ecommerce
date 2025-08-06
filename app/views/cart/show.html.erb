@@ -80,12 +80,11 @@
               <div class="col-md-6">
                 <div class="cart-actions">
                   <%= link_to "Continue Shopping", products_path, class: "btn btn-outline-secondary" %>
-                  <%= link_to clear_cart_path,
-                             method: :delete,
-                             class: "btn btn-outline-warning",
-                             confirm: "Are you sure you want to clear your entire cart?" do %>
-                    Clear Cart
-                  <% end %>
+                  <%= button_to "Clear Cart",
+             clear_cart_path,
+             method: :delete,
+             class: "btn btn-outline-warning",
+             data: { confirm: "Are you sure you want to clear your entire cart?" } %>
                 </div>
               </div>
               <div class="col-md-6">
