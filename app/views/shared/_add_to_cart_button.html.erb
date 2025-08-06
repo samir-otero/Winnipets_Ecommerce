@@ -1,0 +1,9 @@
+<%= form_with url: add_to_cart_path(product), method: :post, local: false, class: "add-to-cart-form" do |f| %>
+  <div class="d-flex align-items-center">
+    <%= f.number_field :quantity, value: 1, min: 1, max: product.stock_quantity,
+                       class: "form-control form-control-sm me-2",
+                       style: "width: 80px;" %>
+    <%= f.submit "Add to Cart", class: "btn btn-primary",
+                 data: { disable_with: "Adding..." } %>
+  </div>
+<% end %>

@@ -1,0 +1,129 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <h1>Shopping Cart</h1>
+
+      <% if current_cart.empty? %>
+        <div class="alert alert-info">
+          <h4>Your cart is empty</h4>
+          <p>Start shopping to add items to your cart.</p>
+          <%= link_to "Continue Shopping", products_path, class: "btn btn-primary" %>
+        </div>
+      <% else %>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @cart_items.each do |item| %>
+                <tr id="cart-item-<%= item.id %>">
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <% if item.image %>
+                        <%= image_tag item.image, class: "img-thumbnail me-3", style: "width: 80px; height: 80px; object-fit: cover;" %>
+                      <% else %>
+                        <div class="placeholder-image me-3" style="width: 80px; height: 80px; background-color: #f8f9fa; border: 1px solid #dee2e6;"></div>
+                      <% end %>
+                      <div>
+                        <h6 class="mb-0"><%= item.name %></h6>
+                        <small class="text-muted">SKU: <%= item.sku %></small>
+                      </div>
+                    </div>
+                  </td>
+                  <td><%= number_to_currency(item.unit_price) %></td>
+                  <td>
+                    <%= form_with url: update_cart_path(item.id), method: :patch, local: false, class: "d-flex align-items-center quantity-form" do |f| %>
+                      <%= f.number_field :quantity, value: item.quantity, min: 1, max: 99,
+                                        class: "form-control form-control-sm me-2",
+                                        style: "width: 70px;",
+                                        data: { item_id: item.id } %>
+                      <%= f.submit "Update", class: "btn btn-sm btn-outline-secondary" %>
+                    <% end %>
+                  </td>
+                  <td class="item-total-<%= item.id %>">
+                    <%= number_to_currency(item.total_price) %>
+                  </td>
+                  <td>
+                    <%= link_to remove_from_cart_path(item.id),
+                               method: :delete,
+                               class: "btn btn-sm btn-outline-danger",
+                               data: { confirm: "Remove #{item.name} from cart?" } do %>
+                      <i class="fas fa-trash"></i> Remove
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+            <tfoot>
+              <tr>
+                <th colspan="3">Subtotal:</th>
+                <th id="cart-subtotal"><%= number_to_currency(@subtotal) %></th>
+                <th></th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div class="row mt-4">
+          <div class="col-md-6">
+            <%= link_to "Continue Shopping", products_path, class: "btn btn-outline-primary" %>
+            <%= link_to "Clear Cart", clear_cart_path,
+                       method: :delete,
+                       class: "btn btn-outline-danger ms-2",
+                       data: { confirm: "Are you sure you want to clear your cart?" } %>
+          </div>
+          <div class="col-md-6 text-end">
+            <%= link_to "Proceed to Checkout", checkout_path, class: "btn btn-success btn-lg" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Handle AJAX quantity updates
+  const quantityForms = document.querySelectorAll('.quantity-form');
+
+  quantityForms.forEach(form => {
+    const quantityInput = form.querySelector('input[name="quantity"]');
+    const itemId = quantityInput.dataset.itemId;
+
+    form.addEventListener('ajax:success', function(event) {
+      const response = event.detail[0];
+
+      if (response.success) {
+        // Update item total
+        const itemTotalElement = document.querySelector(`.item-total-${itemId}`);
+        if (itemTotalElement) {
+          itemTotalElement.textContent = response.item_total;
+        }
+
+        // Update cart subtotal
+        const subtotalElement = document.getElementById('cart-subtotal');
+        if (subtotalElement) {
+          subtotalElement.textContent = response.subtotal;
+        }
+
+        // Update cart count in navigation (if you have it)
+        const cartCountElement = document.querySelector('.cart-count');
+        if (cartCountElement) {
+          cartCountElement.textContent = response.cart_count;
+        }
+      }
+    });
+
+    form.addEventListener('ajax:error', function(event) {
+      alert('Error updating quantity. Please try again.');
+    });
+  });
+});
+</script>

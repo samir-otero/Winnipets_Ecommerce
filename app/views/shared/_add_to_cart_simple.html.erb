@@ -1,0 +1,64 @@
+<%= form_with url: add_to_cart_path(product), method: :post, local: false, class: "add-to-cart-form-simple" do |f| %>
+  <%= f.hidden_field :quantity, value: 1 %>
+  <%= f.submit "Add to Cart", class: "btn btn-sm btn-outline-primary w-100",
+               data: { disable_with: "Adding..." } %>
+<% end %>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Handle add to cart form submissions
+  const addToCartForms = document.querySelectorAll('.add-to-cart-form, .add-to-cart-form-simple');
+
+  addToCartForms.forEach(form => {
+    form.addEventListener('ajax:success', function(event) {
+      const response = event.detail[0];
+
+      if (response.success) {
+        // Show success message
+        showNotification(response.message, 'success');
+
+        // Update cart count in navigation
+        updateCartCount(response.cart_count);
+
+        // Reset form
+        const quantityInput = form.querySelector('input[name="quantity"]');
+        if (quantityInput && quantityInput.type === 'number') {
+          quantityInput.value = 1;
+        }
+      }
+    });
+
+    form.addEventListener('ajax:error', function(event) {
+      showNotification('Error adding item to cart. Please try again.', 'error');
+    });
+  });
+
+  function showNotification(message, type) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
+    notification.innerHTML = `
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+
+    document.body.appendChild(notification);
+
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.remove();
+      }
+    }, 3000);
+  }
+
+  function updateCartCount(count) {
+    const cartCountElement = document.querySelector('.cart-count');
+    if (cartCountElement) {
+      cartCountElement.textContent = count;
+      cartCountElement.style.display = count > 0 ? 'inline' : 'none';
+    }
+  }
+});
+</script>

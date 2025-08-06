@@ -1,0 +1,132 @@
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card">
+        <div class="card-header bg-success text-white">
+          <h1 class="h3 mb-0">
+            <i class="fas fa-check-circle"></i> Order Confirmed!
+          </h1>
+        </div>
+        <div class="card-body">
+          <p class="lead">Thank you for your order! We've received your order and will begin processing it shortly.</p>
+
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <h5>Order Details</h5>
+              <p class="mb-1"><strong>Order Number:</strong> <%= @order.order_number %></p>
+              <p class="mb-1"><strong>Order Date:</strong> <%= @order.created_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+              <p class="mb-1"><strong>Status:</strong> <span class="badge bg-warning"><%= @order.status.titleize %></span></p>
+            </div>
+            <div class="col-md-6">
+              <h5>Customer Information</h5>
+              <p class="mb-1"><strong>Name:</strong> <%= @order.user.first_name %> <%= @order.user.last_name %></p>
+              <p class="mb-1"><strong>Email:</strong> <%= @order.user.email %></p>
+              <p class="mb-1"><strong>Phone:</strong> <%= @order.user.phone %></p>
+            </div>
+          </div>
+
+          <div class="row mb-4">
+            <div class="col-12">
+              <h5>Shipping Address</h5>
+              <% if @order.shipping_address %>
+                <address>
+                  <%= @order.shipping_address.address_line_1 %><br>
+                  <% if @order.shipping_address.address_line_2.present? %>
+                    <%= @order.shipping_address.address_line_2 %><br>
+                  <% end %>
+                  <%= @order.shipping_address.city %>, <%= @order.shipping_address.province.abbreviation %> <%= @order.shipping_address.postal_code %>
+                </address>
+              <% end %>
+            </div>
+          </div>
+
+          <h5>Order Items</h5>
+          <div class="table-responsive mb-4">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>SKU</th>
+                  <th>Price</th>
+                  <th>Quantity</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @order.order_items.each do |item| %>
+                  <tr>
+                    <td><%= item.product_name %></td>
+                    <td><%= item.product_sku %></td>
+                    <td><%= number_to_currency(item.unit_price) %></td>
+                    <td><%= item.quantity %></td>
+                    <td><%= number_to_currency(item.total_price) %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 offset-md-6">
+              <div class="card">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between mb-2">
+                    <span>Subtotal:</span>
+                    <span><%= number_to_currency(@order.subtotal) %></span>
+                  </div>
+
+                  <% if @order.gst_rate > 0 %>
+                    <div class="d-flex justify-content-between mb-2">
+                      <span>GST (<%= number_to_percentage(@order.gst_rate * 100, precision: 1) %>):</span>
+                      <span><%= number_to_currency(@order.subtotal * @order.gst_rate) %></span>
+                    </div>
+                  <% end %>
+
+                  <% if @order.pst_rate > 0 %>
+                    <div class="d-flex justify-content-between mb-2">
+                      <span>PST (<%= number_to_percentage(@order.pst_rate * 100, precision: 1) %>):</span>
+                      <span><%= number_to_currency(@order.subtotal * @order.pst_rate) %></span>
+                    </div>
+                  <% end %>
+
+                  <% if @order.hst_rate > 0 %>
+                    <div class="d-flex justify-content-between mb-2">
+                      <span>HST (<%= number_to_percentage(@order.hst_rate * 100, precision: 1) %>):</span>
+                      <span><%= number_to_currency(@order.subtotal * @order.hst_rate) %></span>
+                    </div>
+                  <% end %>
+
+                  <div class="d-flex justify-content-between mb-2">
+                    <span>Shipping:</span>
+                    <span><%= number_to_currency(@order.shipping_cost) %></span>
+                  </div>
+
+                  <hr>
+
+                  <div class="d-flex justify-content-between h5">
+                    <strong>Total:</strong>
+                    <strong><%= number_to_currency(@order.total_amount) %></strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <h5>What's Next?</h5>
+            <ul>
+              <li>You will receive an email confirmation shortly at <%= @order.user.email %></li>
+              <li>We'll notify you when your order ships</li>
+              <li>Estimated delivery: 3-5 business days</li>
+            </ul>
+          </div>
+
+          <div class="mt-4">
+            <%= link_to "Continue Shopping", products_path, class: "btn btn-primary" %>
+            <button onclick="window.print()" class="btn btn-outline-secondary">Print Order</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
