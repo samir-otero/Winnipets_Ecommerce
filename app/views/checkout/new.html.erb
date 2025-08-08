@@ -1,194 +1,363 @@
-<div class="container mt-4">
-  <div class="row">
-    <div class="col-lg-8">
-      <h1>Checkout</h1>
-      <%= form_with url: checkout_path, method: :post, local: true, data: { turbo: false } do |f| %>
-        <div class="card mb-4">
-          <div class="card-header">
-            <h4>Contact Information</h4>
-          </div>
-          <div class="card-body">
-            <% if @guest_user.errors.any? %>
-              <div class="alert alert-danger">
-                <h6>Please correct the following errors:</h6>
-                <ul class="mb-0">
-                  <% @guest_user.errors.full_messages.each do |message| %>
-                    <li><%= message %></li>
-                  <% end %>
-                </ul>
+<div class="checkout-page bg-winnipets-light py-5">
+  <div class="container">
+    <!-- Page Header -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="text-center mb-4">
+          <h1 class="display-6 fw-bold text-winnipets-primary">
+            <i class="bi bi-credit-card me-3"></i>Secure Checkout
+          </h1>
+          <p class="lead text-muted">Complete your order safely and securely</p>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="checkout-progress mb-4">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="progress-step active">
+              <div class="step-circle">
+                <i class="bi bi-cart3"></i>
               </div>
-            <% end %>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <%= f.label "guest_user[first_name]", "First Name", class: "form-label" %>
-                <%= f.text_field "guest_user[first_name]",
-                    value: @guest_user.first_name,
-                    class: "form-control #{'is-invalid' if @guest_user.errors[:first_name].any?}" %>
-                <% if @guest_user.errors[:first_name].any? %>
-                  <div class="invalid-feedback">
-                    <%= @guest_user.errors[:first_name].first %>
-                  </div>
-                <% end %>
-              </div>
-              <div class="col-md-6 mb-3">
-                <%= f.label "guest_user[last_name]", "Last Name", class: "form-label" %>
-                <%= f.text_field "guest_user[last_name]",
-                    value: @guest_user.last_name,
-                    class: "form-control #{'is-invalid' if @guest_user.errors[:last_name].any?}" %>
-                <% if @guest_user.errors[:last_name].any? %>
-                  <div class="invalid-feedback">
-                    <%= @guest_user.errors[:last_name].first %>
-                  </div>
-                <% end %>
-              </div>
+              <span class="step-label">Cart</span>
             </div>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <%= f.label "guest_user[email]", "Email", class: "form-label" %>
-                <%= f.email_field "guest_user[email]",
-                    value: @guest_user.email,
-                    class: "form-control #{'is-invalid' if @guest_user.errors[:email].any?}" %>
-                <% if @guest_user.errors[:email].any? %>
-                  <div class="invalid-feedback">
-                    <%= @guest_user.errors[:email].first %>
-                  </div>
-                <% end %>
+            <div class="progress-line"></div>
+            <div class="progress-step active">
+              <div class="step-circle">
+                <i class="bi bi-person"></i>
               </div>
-              <div class="col-md-6 mb-3">
-                <%= f.label "guest_user[phone]", "Phone", class: "form-label" %>
-                <%= f.telephone_field "guest_user[phone]",
-                    value: @guest_user.phone,
-                    class: "form-control #{'is-invalid' if @guest_user.errors[:phone].any?}" %>
-                <% if @guest_user.errors[:phone].any? %>
-                  <div class="invalid-feedback">
-                    <%= @guest_user.errors[:phone].first %>
-                  </div>
-                <% end %>
+              <span class="step-label">Information</span>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-step">
+              <div class="step-circle">
+                <i class="bi bi-check2"></i>
               </div>
+              <span class="step-label">Confirmation</span>
             </div>
           </div>
         </div>
+      </div>
+    </div>
 
-        <div class="card mb-4">
-          <div class="card-header">
-            <h4>Shipping Address</h4>
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <%= form_with url: checkout_path, method: :post, local: true,
+                     data: { turbo: false }, class: "checkout-form" do |f| %>
+
+          <!-- Contact Information -->
+          <div class="card shadow-winnipets border-0 mb-4">
+            <div class="card-header bg-white">
+              <h4 class="mb-0 text-winnipets-primary">
+                <i class="bi bi-person-circle me-2"></i>Contact Information
+              </h4>
+            </div>
+            <div class="card-body">
+              <% if @media (max-width: 576px) {
+  .display-6 {
+    font-size: 1.75rem;
+  }
+
+  .card-body {
+    padding: 1rem;
+  }
+
+  .btn-lg {
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+  }
+}
+</style>guest_user.errors.any? %>
+                <div class="alert alert-danger border-0">
+                  <h6 class="fw-bold">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Please correct the following errors:
+                  </h6>
+                  <ul class="mb-0 mt-2">
+                    <% @guest_user.errors.full_messages.each do |message| %>
+                      <li><%= message %></li>
+                    <% end %>
+                  </ul>
+                </div>
+              <% end %>
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <%= f.text_field "guest_user[first_name]",
+                        value: @guest_user.first_name,
+                        class: "form-control #{'is-invalid' if @guest_user.errors[:first_name].any?}",
+                        placeholder: "First Name" %>
+                    <%= f.label "guest_user[first_name]", "First Name", class: "form-label" %>
+                    <% if @guest_user.errors[:first_name].any? %>
+                      <div class="invalid-feedback">
+                        <%= @guest_user.errors[:first_name].first %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <%= f.text_field "guest_user[last_name]",
+                        value: @guest_user.last_name,
+                        class: "form-control #{'is-invalid' if @guest_user.errors[:last_name].any?}",
+                        placeholder: "Last Name" %>
+                    <%= f.label "guest_user[last_name]", "Last Name", class: "form-label" %>
+                    <% if @guest_user.errors[:last_name].any? %>
+                      <div class="invalid-feedback">
+                        <%= @guest_user.errors[:last_name].first %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row g-3 mt-3">
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <%= f.email_field "guest_user[email]",
+                        value: @guest_user.email,
+                        class: "form-control #{'is-invalid' if @guest_user.errors[:email].any?}",
+                        placeholder: "Email Address" %>
+                    <%= f.label "guest_user[email]", "Email Address", class: "form-label" %>
+                    <% if @guest_user.errors[:email].any? %>
+                      <div class="invalid-feedback">
+                        <%= @guest_user.errors[:email].first %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <%= f.telephone_field "guest_user[phone]",
+                        value: @guest_user.phone,
+                        class: "form-control #{'is-invalid' if @guest_user.errors[:phone].any?}",
+                        placeholder: "Phone Number" %>
+                    <%= f.label "guest_user[phone]", "Phone Number", class: "form-label" %>
+                    <% if @guest_user.errors[:phone].any? %>
+                      <div class="invalid-feedback">
+                        <%= @guest_user.errors[:phone].first %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Shipping Address -->
+          <div class="card shadow-winnipets border-0 mb-4">
+            <div class="card-header bg-white">
+              <h4 class="mb-0 text-winnipets-primary">
+                <i class="bi bi-truck me-2"></i>Shipping Address
+              </h4>
+            </div>
+            <div class="card-body">
+              <% if @address.errors.any? %>
+                <div class="alert alert-danger border-0">
+                  <h6 class="fw-bold">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Please correct the following errors:
+                  </h6>
+                  <ul class="mb-0 mt-2">
+                    <% @address.errors.full_messages.each do |message| %>
+                      <li><%= message %></li>
+                    <% end %>
+                  </ul>
+                </div>
+              <% end %>
+
+              <div class="row g-3">
+                <div class="col-12">
+                  <div class="form-floating">
+                    <%= f.text_field "address[address_line_1]",
+                        value: @address.address_line_1,
+                        class: "form-control #{'is-invalid' if @address.errors[:address_line_1].any?}",
+                        placeholder: "Street Address" %>
+                    <%= f.label "address[address_line_1]", "Street Address", class: "form-label" %>
+                    <% if @address.errors[:address_line_1].any? %>
+                      <div class="invalid-feedback">
+                        <%= @address.errors[:address_line_1].first %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <div class="form-floating">
+                    <%= f.text_field "address[address_line_2]",
+                        value: @address.address_line_2,
+                        class: "form-control",
+                        placeholder: "Apartment, suite, etc. (optional)" %>
+                    <%= f.label "address[address_line_2]", "Apartment, suite, etc. (optional)", class: "form-label" %>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <%= f.text_field "address[city]",
+                        value: @address.city,
+                        class: "form-control #{'is-invalid' if @address.errors[:city].any?}",
+                        placeholder: "City" %>
+                    <%= f.label "address[city]", "City", class: "form-label" %>
+                    <% if @address.errors[:city].any? %>
+                      <div class="invalid-feedback">
+                        <%= @address.errors[:city].first %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+
+                <div class="col-md-3">
+                  <div class="form-floating">
+                    <%= f.select "address[province_id]",
+                        options_from_collection_for_select(@provinces, :id, :name, @address.province_id),
+                        { prompt: "Select Province" },
+                        { class: "form-select #{'is-invalid' if @address.errors[:province_id].any?}", id: "province_select" } %>
+                    <%= f.label "address[province_id]", "Province", class: "form-label" %>
+                    <% if @address.errors[:province_id].any? %>
+                      <div class="invalid-feedback">
+                        <%= @address.errors[:province_id].first %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+
+                <div class="col-md-3">
+                  <div class="form-floating">
+                    <%= f.text_field "address[postal_code]",
+                        value: @address.postal_code,
+                        class: "form-control #{'is-invalid' if @address.errors[:postal_code].any?}",
+                        placeholder: "A1A 1A1",
+                        pattern: "[A-Za-z]\d[A-Za-z] \d[A-Za-z]\d" %>
+                    <%= f.label "address[postal_code]", "Postal Code", class: "form-label" %>
+                    <% if @address.errors[:postal_code].any? %>
+                      <div class="invalid-feedback">
+                        <%= @address.errors[:postal_code].first %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="d-flex flex-column flex-sm-row gap-3 justify-content-between align-items-center">
+            <%= link_to "Back to Cart", cart_path,
+                       class: "btn btn-outline-secondary btn-lg" %>
+            <%= f.submit "Continue to Review",
+                        class: "btn btn-primary btn-lg px-5 fw-bold",
+                        data: { disable_with: "Processing..." } %>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Order Summary Sidebar -->
+      <div class="col-lg-4">
+        <div class="card shadow-winnipets-lg border-0 sticky-top" style="top: 100px;">
+          <div class="card-header bg-winnipets-light">
+            <h4 class="mb-0 text-winnipets-primary">
+              <i class="bi bi-receipt me-2"></i>Order Summary
+            </h4>
           </div>
           <div class="card-body">
-            <% if @address.errors.any? %>
-              <div class="alert alert-danger">
-                <h6>Please correct the following errors:</h6>
-                <ul class="mb-0">
-                  <% @address.errors.full_messages.each do |message| %>
-                    <li><%= message %></li>
-                  <% end %>
-                </ul>
-              </div>
-            <% end %>
-            <div class="mb-3">
-              <%= f.label "address[address_line_1]", "Address", class: "form-label" %>
-              <%= f.text_field "address[address_line_1]",
-                  value: @address.address_line_1,
-                  class: "form-control #{'is-invalid' if @address.errors[:address_line_1].any?}" %>
-              <% if @address.errors[:address_line_1].any? %>
-                <div class="invalid-feedback">
-                  <%= @address.errors[:address_line_1].first %>
+            <!-- Order Items -->
+            <div class="order-items mb-4">
+              <% @cart_items.each do |item| %>
+                <div class="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
+                  <div class="d-flex align-items-center">
+                    <% if item.respond_to?(:image) && item.image %>
+                      <%= image_tag item.image, class: "me-3 rounded",
+                                   style: "width: 50px; height: 50px; object-fit: cover;" %>
+                    <% end %>
+                    <div>
+                      <h6 class="mb-1 small fw-semibold"><%= item.name %></h6>
+                      <small class="text-muted">Qty: <%= item.quantity %></small>
+                    </div>
+                  </div>
+                  <span class="fw-semibold text-winnipets-primary">
+                    <%= number_to_currency(item.total_price) %>
+                  </span>
                 </div>
               <% end %>
             </div>
-            <div class="mb-3">
-              <%= f.label "address[address_line_2]", "Apartment, suite, etc. (optional)", class: "form-label" %>
-              <%= f.text_field "address[address_line_2]",
-                  value: @address.address_line_2,
-                  class: "form-control" %>
+
+            <!-- Order Totals -->
+            <div class="order-totals">
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Subtotal:</span>
+                <span class="fw-semibold" id="order-subtotal">
+                  <%= number_to_currency(@subtotal) %>
+                </span>
+              </div>
+
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">
+                  <i class="bi bi-truck me-1"></i>Shipping:
+                </span>
+                <span class="text-success fw-semibold">FREE</span>
+              </div>
+
+              <!-- Tax Breakdown -->
+              <div id="tax-breakdown" style="display: none;">
+                <hr class="my-3">
+                <h6 class="text-winnipets-primary mb-2">Tax Breakdown:</h6>
+
+                <div class="d-flex justify-content-between mb-1" id="gst-row">
+                  <small class="text-muted">GST:</small>
+                  <small id="gst-amount" class="fw-semibold">$0.00</small>
+                </div>
+
+                <div class="d-flex justify-content-between mb-1" id="pst-row">
+                  <small class="text-muted">PST:</small>
+                  <small id="pst-amount" class="fw-semibold">$0.00</small>
+                </div>
+
+                <div class="d-flex justify-content-between mb-2" id="hst-row">
+                  <small class="text-muted">HST:</small>
+                  <small id="hst-amount" class="fw-semibold">$0.00</small>
+                </div>
+              </div>
+
+              <hr class="my-3">
+
+              <div class="d-flex justify-content-between mb-3">
+                <h5 class="mb-0">Total:</h5>
+                <h5 class="mb-0 text-winnipets-primary" id="order-total">
+                  <%= number_to_currency(@subtotal) %>
+                </h5>
+              </div>
             </div>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <%= f.label "address[city]", "City", class: "form-label" %>
-                <%= f.text_field "address[city]",
-                    value: @address.city,
-                    class: "form-control #{'is-invalid' if @address.errors[:city].any?}" %>
-                <% if @address.errors[:city].any? %>
-                  <div class="invalid-feedback">
-                    <%= @address.errors[:city].first %>
-                  </div>
-                <% end %>
-              </div>
-              <div class="col-md-3 mb-3">
-                <%= f.label "address[province_id]", "Province", class: "form-label" %>
-                <%= f.select "address[province_id]",
-                    options_from_collection_for_select(@provinces, :id, :name, @address.province_id),
-                    { prompt: "Select Province" },
-                    { class: "form-select #{'is-invalid' if @address.errors[:province_id].any?}", id: "province_select" } %>
-                <% if @address.errors[:province_id].any? %>
-                  <div class="invalid-feedback">
-                    <%= @address.errors[:province_id].first %>
-                  </div>
-                <% end %>
-              </div>
-              <div class="col-md-3 mb-3">
-                <%= f.label "address[postal_code]", "Postal Code", class: "form-label" %>
-                <%= f.text_field "address[postal_code]",
-                    value: @address.postal_code,
-                    class: "form-control #{'is-invalid' if @address.errors[:postal_code].any?}",
-                    placeholder: "A1A 1A1" %>
-                <% if @address.errors[:postal_code].any? %>
-                  <div class="invalid-feedback">
-                    <%= @address.errors[:postal_code].first %>
-                  </div>
-                <% end %>
+
+            <!-- Security Badge -->
+            <div class="text-center mt-4 pt-3 border-top">
+              <div class="d-flex align-items-center justify-content-center text-muted">
+                <i class="bi bi-shield-check me-2 text-success"></i>
+                <small>Secured by SSL encryption</small>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="d-flex justify-content-between">
-          <%= link_to "Back to Cart", cart_path, class: "btn btn-outline-secondary" %>
-          <%= f.submit "Continue to Review", class: "btn btn-success btn-lg" %>
-        </div>
-      <% end %>
-    </div>
-
-    <div class="col-lg-4">
-      <div class="card">
-        <div class="card-header">
-          <h4>Order Summary</h4>
-        </div>
-        <div class="card-body">
-          <% @cart_items.each do |item| %>
-            <div class="d-flex justify-content-between mb-2">
-              <span><%= item.name %> × <%= item.quantity %></span>
-              <span><%= number_to_currency(item.total_price) %></span>
-            </div>
-          <% end %>
-          <hr>
-          <div class="d-flex justify-content-between mb-2">
-            <span>Subtotal:</span>
-            <span id="order-subtotal"><%= number_to_currency(@subtotal) %></span>
-          </div>
-          <div class="d-flex justify-content-between mb-2" id="tax-breakdown" style="display: none;">
-            <div class="w-100">
-              <div class="d-flex justify-content-between" id="gst-row">
-                <span>GST:</span>
-                <span id="gst-amount">$0.00</span>
+        <!-- Trust Indicators -->
+        <div class="card shadow-sm border-0 mt-3">
+          <div class="card-body text-center py-3">
+            <h6 class="text-winnipets-primary mb-3">Your Purchase is Protected</h6>
+            <div class="row g-3">
+              <div class="col-4 text-center">
+                <i class="bi bi-shield-check fs-4 text-success mb-2"></i>
+                <p class="small mb-0">Secure Payment</p>
               </div>
-              <div class="d-flex justify-content-between" id="pst-row">
-                <span>PST:</span>
-                <span id="pst-amount">$0.00</span>
+              <div class="col-4 text-center">
+                <i class="bi bi-arrow-clockwise fs-4 text-winnipets-secondary mb-2"></i>
+                <p class="small mb-0">Easy Returns</p>
               </div>
-              <div class="d-flex justify-content-between" id="hst-row">
-                <span>HST:</span>
-                <span id="hst-amount">$0.00</span>
+              <div class="col-4 text-center">
+                <i class="bi bi-headset fs-4 text-winnipets-accent mb-2"></i>
+                <p class="small mb-0">24/7 Support</p>
               </div>
             </div>
-          </div>
-          <div class="d-flex justify-content-between mb-2">
-            <span>Shipping:</span>
-            <span>Free</span>
-          </div>
-          <hr>
-          <div class="d-flex justify-content-between h5">
-            <strong>Total:</strong>
-            <strong id="order-total"><%= number_to_currency(@subtotal) %></strong>
           </div>
         </div>
       </div>
@@ -200,6 +369,7 @@
 document.addEventListener('DOMContentLoaded', function() {
   const provinceSelect = document.getElementById('province_select');
   const subtotal = <%= @subtotal %>;
+
   const taxRates = {
     <% @provinces.each do |province| %>
       '<%= province.id %>': {
@@ -224,8 +394,9 @@ document.addEventListener('DOMContentLoaded', function() {
       const totalTax = gstAmount + pstAmount + hstAmount;
       const total = subtotal + totalTax;
 
-      // Show tax breakdown
+      // Show tax breakdown with animation
       taxBreakdown.style.display = 'block';
+      taxBreakdown.style.animation = 'fadeIn 0.3s ease';
 
       // Update individual tax amounts
       document.getElementById('gst-amount').textContent = '$' + gstAmount.toFixed(2);
@@ -237,8 +408,13 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('pst-row').style.display = rates.pst > 0 ? 'flex' : 'none';
       document.getElementById('hst-row').style.display = rates.hst > 0 ? 'flex' : 'none';
 
-      // Update total
+      // Update total with animation
       orderTotal.textContent = '$' + total.toFixed(2);
+      orderTotal.classList.add('text-success');
+      setTimeout(() => {
+        orderTotal.classList.remove('text-success');
+        orderTotal.classList.add('text-winnipets-primary');
+      }, 1000);
     } else {
       taxBreakdown.style.display = 'none';
       orderTotal.textContent = '$' + subtotal.toFixed(2);
@@ -246,7 +422,146 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   provinceSelect.addEventListener('change', updateTaxCalculation);
+
   // Calculate taxes on page load if province is already selected
-  updateTaxCalculation();
+  if (provinceSelect.value) {
+    updateTaxCalculation();
+  }
+
+  // Form validation
+  const form = document.querySelector('.checkout-form');
+  form.addEventListener('submit', function(e) {
+    // Add loading state
+    const submitBtn = form.querySelector('input[type="submit"]');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.classList.add('btn-secondary');
+      submitBtn.classList.remove('btn-primary');
+    }
+  });
+
+  // Postal code formatting
+  const postalCodeInput = document.querySelector('input[name="address[postal_code]"]');
+  if (postalCodeInput) {
+    postalCodeInput.addEventListener('input', function(e) {
+      let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      if (value.length >= 3) {
+        value = value.slice(0, 3) + ' ' + value.slice(3, 6);
+      }
+      e.target.value = value;
+    });
+  }
 });
 </script>
+
+<style>
+.checkout-page {
+  min-height: 80vh;
+}
+
+.checkout-progress {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.step-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #e9ecef;
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.progress-step.active .step-circle {
+  background-color: var(--winnipets-primary);
+  color: white;
+}
+
+.step-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--winnipets-text-dark);
+}
+
+.progress-line {
+  height: 2px;
+  background-color: #e9ecef;
+  flex: 1;
+  margin: 25px 1rem 0 1rem;
+}
+
+.progress-step.active + .progress-line {
+  background-color: var(--winnipets-primary);
+}
+
+.form-floating > .form-control,
+.form-floating > .form-select {
+  padding-top: 1.625rem;
+  padding-bottom: 0.625rem;
+}
+
+.form-floating > label {
+  color: var(--winnipets-warm-gray);
+  font-weight: 500;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--winnipets-primary);
+  box-shadow: 0 0 0 0.2rem rgba(139, 69, 19, 0.1);
+}
+
+.order-items {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.sticky-top {
+  top: 100px !important;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .progress-step {
+    font-size: 0.8rem;
+  }
+
+  .step-circle {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  .step-label {
+    font-size: 0.75rem;
+  }
+
+  .sticky-top {
+    position: relative !important;
+    top: auto !important;
+  }
+
+  .checkout-progress {
+    margin-bottom: 2rem;
+  }
+}
+
+@

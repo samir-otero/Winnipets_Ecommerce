@@ -1,9 +1,329 @@
-<%= form_with url: add_item_cart_path(product), method: :post, local: false, class: "add-to-cart-form" do |f| %>
-  <div class="d-flex align-items-center">
-    <%= f.number_field :quantity, value: 1, min: 1, max: product.stock_quantity,
-                       class: "form-control form-control-sm me-2",
-                       style: "width: 80px;" %>
-    <%= f.submit "Add to Cart", class: "btn btn-primary",
-                 data: { disable_with: "Adding..." } %>
+<%= form_with url: add_item_cart_path(product), method: :post, local: false,
+               class: "add-to-cart-form position-relative" do |f| %>
+
+  <!-- Quantity and Add to Cart Section -->
+  <div class="quantity-section mb-3">
+    <label class="form-label fw-semibold text-winnipets-primary mb-2">
+      <i class="bi bi-plus-square me-1"></i>Quantity:
+    </label>
+    <div class="input-group" style="max-width: 200px;">
+      <button class="btn btn-outline-secondary quantity-decrease" type="button" data-action="decrease">
+        <i class="bi bi-dash"></i>
+      </button>
+      <%= f.number_field :quantity, value: 1, min: 1, max: product.stock_quantity,
+                         class: "form-control text-center fw-bold quantity-input",
+                         id: "quantity-#{product.id}" %>
+      <button class="btn btn-outline-secondary quantity-increase" type="button" data-action="increase"
+              data-max="<%= product.stock_quantity %>">
+        <i class="bi bi-plus"></i>
+      </button>
+    </div>
+    <small class="text-muted mt-1 d-block">
+      Maximum: <%= product.stock_quantity %> units
+    </small>
+  </div>
+
+  <!-- Price Calculator -->
+  <div class="price-calculator mb-4 p-3 bg-winnipets-light rounded-3">
+    <div class="d-flex justify-content-between align-items-center">
+      <span class="fw-semibold">Total Price:</span>
+      <span class="h5 mb-0 fw-bold text-winnipets-primary total-price"
+            data-unit-price="<%= product.on_sale? ? product.sale_price : product.price %>">
+        <%= number_to_currency(product.on_sale? ? product.sale_price : product.price) %>
+      </span>
+    </div>
+  </div>
+
+  <!-- Add to Cart Button -->
+  <div class="d-grid mb-3">
+    <%= f.submit "Add to Cart",
+                 class: "btn btn-primary btn-lg fw-bold py-3",
+                 data: { disable_with: "Adding to Cart..." },
+                 style: "font-size: 1.1rem;" %>
+  </div>
+
+  <!-- Buy Now Button -->
+  <div class="d-grid">
+    <%= link_to "Buy Now", "#",
+               class: "btn btn-winnipets-secondary btn-lg fw-bold py-3",
+               onclick: "buyNow(event, #{product.id})",
+               style: "font-size: 1.1rem;" %>
   </div>
 <% end %>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.querySelector('.add-to-cart-form');
+  if (!form) return;
+
+  const quantityInput = form.querySelector('.quantity-input');
+  const decreaseBtn = form.querySelector('.quantity-decrease');
+  const increaseBtn = form.querySelector('.quantity-increase');
+  const totalPriceElement = form.querySelector('.total-price');
+  const unitPrice = parseFloat(totalPriceElement.dataset.unitPrice);
+  const maxQuantity = parseInt(increaseBtn.dataset.max);
+
+  // Quantity adjustment functions
+  function updateQuantity(newQuantity) {
+    if (newQuantity < 1) newQuantity = 1;
+    if (newQuantity > maxQuantity) newQuantity = maxQuantity;
+
+    quantityInput.value = newQuantity;
+    updateTotalPrice(newQuantity);
+    updateButtonStates(newQuantity);
+  }
+
+  function updateTotalPrice(quantity) {
+    const total = unitPrice * quantity;
+    totalPriceElement.textContent = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(total);
+
+    // Add subtle animation
+    totalPriceElement.classList.add('text-success');
+    setTimeout(() => {
+      totalPriceElement.classList.remove('text-success');
+    }, 500);
+  }
+
+  function updateButtonStates(quantity) {
+    decreaseBtn.disabled = quantity <= 1;
+    increaseBtn.disabled = quantity >= maxQuantity;
+
+    if (quantity >= maxQuantity) {
+      increaseBtn.classList.add('btn-outline-danger');
+      increaseBtn.classList.remove('btn-outline-secondary');
+    } else {
+      increaseBtn.classList.remove('btn-outline-danger');
+      increaseBtn.classList.add('btn-outline-secondary');
+    }
+  }
+
+  // Event listeners
+  decreaseBtn.addEventListener('click', function() {
+    const currentQuantity = parseInt(quantityInput.value);
+    updateQuantity(currentQuantity - 1);
+  });
+
+  increaseBtn.addEventListener('click', function() {
+    const currentQuantity = parseInt(quantityInput.value);
+    updateQuantity(currentQuantity + 1);
+  });
+
+  quantityInput.addEventListener('input', function() {
+    updateQuantity(parseInt(this.value) || 1);
+  });
+
+  // Handle form submission success
+  form.addEventListener('ajax:success', function(event) {
+    const response = event.detail[0];
+    if (response.success) {
+      // Show success animation
+      showAddToCartSuccess();
+
+      // Update cart count in navigation
+      updateCartCount(response.cart_count);
+
+      // Reset quantity to 1
+      updateQuantity(1);
+
+      showNotification(response.message || 'Item added to cart successfully!', 'success');
+    }
+  });
+
+  form.addEventListener('ajax:error', function(event) {
+    showNotification('Error adding item to cart. Please try again.', 'error');
+  });
+
+  // Initialize button states
+  updateButtonStates(1);
+});
+
+// Buy Now functionality
+function buyNow(event, productId) {
+  event.preventDefault();
+  const form = document.querySelector('.add-to-cart-form');
+  const quantityInput = form.querySelector('.quantity-input');
+
+  // Add to cart first, then redirect to cart
+  const formData = new FormData(form);
+
+  fetch(form.action, {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Redirect to cart
+      window.location.href = '/cart';
+    } else {
+      showNotification('Error adding item to cart. Please try again.', 'error');
+    }
+  })
+  .catch(error => {
+    showNotification('Error adding item to cart. Please try again.', 'error');
+  });
+}
+
+function showAddToCartSuccess() {
+  // Create success animation overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center';
+  overlay.style.cssText = 'background-color: rgba(0,0,0,0.5); z-index: 9999; animation: fadeIn 0.3s ease;';
+
+  overlay.innerHTML = `
+    <div class="bg-white rounded-3 p-4 text-center shadow-lg animate__animated animate__zoomIn">
+      <i class="bi bi-check-circle-fill text-success display-4 mb-3"></i>
+      <h4 class="text-success mb-2">Added to Cart!</h4>
+      <p class="text-muted mb-3">Item has been added to your shopping cart</p>
+      <div class="d-flex gap-2 justify-content-center">
+        <button class="btn btn-outline-secondary" onclick="this.closest('.position-fixed').remove()">
+          Continue Shopping
+        </button>
+        <a href="/cart" class="btn btn-primary">
+          <i class="bi bi-cart3 me-1"></i>View Cart
+        </a>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  // Auto-remove after 3 seconds
+  setTimeout(() => {
+    if (overlay.parentNode) {
+      overlay.style.animation = 'fadeOut 0.3s ease';
+      setTimeout(() => overlay.remove(), 300);
+    }
+  }, 3000);
+
+  // Click outside to close
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) {
+      overlay.remove();
+    }
+  });
+}
+
+function updateCartCount(count) {
+  const cartCountElements = document.querySelectorAll('.cart-count');
+  cartCountElements.forEach(element => {
+    element.textContent = count;
+    element.style.display = count > 0 ? 'inline' : 'none';
+
+    // Add bounce animation
+    element.style.animation = 'bounce 0.5s ease';
+    setTimeout(() => {
+      element.style.animation = '';
+    }, 500);
+  });
+}
+
+function showNotification(message, type) {
+  // Remove existing notifications
+  const existingNotifications = document.querySelectorAll('.cart-notification');
+  existingNotifications.forEach(notification => notification.remove());
+
+  // Create new notification
+  const notification = document.createElement('div');
+  notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show cart-notification position-fixed shadow-lg`;
+  notification.style.cssText = 'top: 80px; right: 20px; z-index: 1050; min-width: 350px; border: none; border-radius: 10px;';
+  notification.innerHTML = `
+    <div class="d-flex align-items-center">
+      <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+      ${message}
+      <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+    </div>
+  `;
+
+  document.body.appendChild(notification);
+
+  // Auto-remove after 4 seconds
+  setTimeout(() => {
+    if (notification.parentNode) {
+      notification.classList.remove('show');
+      setTimeout(() => notification.remove(), 150);
+    }
+  }, 4000);
+}
+</script>
+
+<style>
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+.quantity-input {
+  font-weight: 600;
+  color: var(--winnipets-primary);
+}
+
+.quantity-decrease:disabled,
+.quantity-increase:disabled {
+  opacity: 0.5;
+}
+
+.price-calculator {
+  border-left: 4px solid var(--winnipets-secondary);
+}
+
+.total-price {
+  transition: color 0.3s ease;
+}
+
+.btn[data-disable-with]:disabled {
+  position: relative;
+  color: transparent;
+}
+
+.btn[data-disable-with]:disabled::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: 50%;
+  left: 50%;
+  margin-left: -10px;
+  margin-top: -10px;
+  border: 2px solid transparent;
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 1s ease infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .price-calculator {
+    border-left: none;
+    border-top: 4px solid var(--winnipets-secondary);
+  }
+}
+</style>

@@ -1,9 +1,513 @@
-<div class="container">
-  <div class="jumbotron">
-    <h1 class="display-4">Welcome to Winnipets!</h1>
-    <p class="lead">Your trusted source for pet supplies in Manitoba.</p>
-    <hr class="my-4">
-    <p>This is a placeholder for your main store. The admin area is ready!</p>
-    <%= link_to "Admin Login", admin_login_path, class: "btn btn-primary btn-lg" %>
+<% content_for :title, "Winnipets - Premium Pet Supplies for Manitoba" %>
+
+<!-- Hero Section -->
+<section class="hero-section position-relative overflow-hidden">
+  <div class="hero-background"></div>
+  <div class="container">
+    <div class="row align-items-center min-vh-75">
+      <div class="col-lg-6">
+        <div class="hero-content text-white">
+          <h1 class="display-3 fw-bold mb-4">
+            Premium Pet Care for
+            <span class="text-warning">Manitoba</span> Families
+          </h1>
+          <p class="lead mb-4 opacity-90">
+            From arctic winter gear to summer cooling mats, we provide quality pet supplies
+            designed for Manitoba's unique climate. Trusted by pet families for over 8 years.
+          </p>
+          <div class="d-flex flex-column flex-sm-row gap-3 mb-4">
+            <%= link_to "Shop All Products", products_path,
+                       class: "btn btn-primary btn-lg px-5 py-3 fw-bold" %>
+            <%= link_to "Winter Collection", products_path(category_id: 'winter'),
+                       class: "btn btn-outline-light btn-lg px-5 py-3 fw-bold" %>
+          </div>
+          <div class="hero-features d-flex flex-wrap gap-4">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-truck fs-4 me-2 text-warning"></i>
+              <span class="fw-semibold">Free Shipping Over $50</span>
+            </div>
+            <div class="d-flex align-items-center">
+              <i class="bi bi-geo-alt fs-4 me-2 text-warning"></i>
+              <span class="fw-semibold">Local Manitoba Business</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="hero-image-container">
+          <div class="hero-image-placeholder rounded-3 shadow-lg d-flex align-items-center justify-content-center">
+            <div class="text-center text-muted">
+              <i class="bi bi-image display-1 mb-3"></i>
+              <p class="h5">Hero Image Here</p>
+              <p class="small">Happy pets in Manitoba winter scene</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
+
+  <!-- Scroll indicator -->
+  <div class="scroll-indicator">
+    <i class="bi bi-chevron-down text-white"></i>
+  </div>
+</section>
+
+<!-- Featured Categories -->
+<section class="py-5 bg-white">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 text-center mb-5">
+        <h2 class="display-5 fw-bold text-winnipets-primary mb-3">
+          Shop by Category
+        </h2>
+        <p class="lead text-muted">
+          Everything your pet needs for Manitoba living
+        </p>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <% [
+        { name: "Winter Gear", icon: "snow", description: "Coats, boots & warming accessories", color: "accent" },
+        { name: "Local Treats", icon: "heart-fill", description: "Manitoba-made natural treats", color: "secondary" },
+        { name: "Grooming", icon: "brush", description: "Professional grooming supplies", color: "primary" },
+        { name: "Outdoor Play", icon: "tree", description: "Toys & gear for prairie adventures", color: "success" }
+      ].each do |category| %>
+        <div class="col-lg-3 col-md-6">
+          <div class="category-card h-100 text-center">
+            <div class="category-icon bg-<%= category[:color] %> bg-opacity-10 rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center">
+              <i class="bi bi-<%= category[:icon] %> fs-2 text-<%= category[:color] %>"></i>
+            </div>
+            <h4 class="fw-bold text-winnipets-primary mb-2"><%= category[:name] %></h4>
+            <p class="text-muted mb-3"><%= category[:description] %></p>
+            <%= link_to "Shop Now", products_path,
+                       class: "btn btn-outline-winnipets-primary stretched-link" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Products -->
+<section class="py-5 bg-winnipets-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h2 class="display-6 fw-bold text-winnipets-primary mb-2">
+              <i class="bi bi-star-fill me-2 text-warning"></i>Featured Products
+            </h2>
+            <p class="text-muted mb-0">Our most popular items this season</p>
+          </div>
+          <%= link_to "View All Products", products_path,
+                     class: "btn btn-primary" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <% (1..4).each do |i| %>
+        <div class="col-lg-3 col-md-6">
+          <div class="card h-100 shadow-winnipets product-card">
+            <div class="position-relative overflow-hidden">
+              <div class="card-img-top d-flex align-items-center justify-content-center bg-light"
+                   style="height: 250px;">
+                <div class="text-center text-muted">
+                  <i class="bi bi-image fs-1 mb-2"></i>
+                  <p class="small mb-0">Product Image <%= i %></p>
+                </div>
+              </div>
+              <div class="position-absolute top-0 end-0 m-2">
+                <span class="badge bg-danger fs-6">
+                  <i class="bi bi-percent me-1"></i>Sale
+                </span>
+              </div>
+            </div>
+
+            <div class="card-body d-flex flex-column">
+              <div class="mb-2">
+                <span class="badge bg-secondary bg-opacity-10 text-winnipets-secondary">
+                  <i class="bi bi-tag me-1"></i>Sample Category
+                </span>
+              </div>
+
+              <h5 class="card-title text-winnipets-primary">
+                Sample Product Name <%= i %>
+              </h5>
+
+              <div class="mb-3">
+                <span class="h5 text-danger fw-bold">$29.99</span>
+                <span class="text-muted text-decoration-line-through ms-2">$39.99</span>
+              </div>
+
+              <p class="card-text text-muted small flex-grow-1">
+                High-quality pet supply designed specifically for Manitoba's climate conditions.
+              </p>
+
+              <div class="mt-auto">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <small class="text-success d-flex align-items-center">
+                    <i class="bi bi-check-circle-fill me-1"></i>
+                    <span class="fw-semibold">In Stock</span>
+                  </small>
+                </div>
+
+                <button class="btn btn-primary w-100 fw-semibold">
+                  Add to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="py-5 bg-white">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 text-center mb-5">
+        <h2 class="display-6 fw-bold text-winnipets-primary mb-3">
+          Why Manitoba Pet Families Choose Us
+        </h2>
+        <p class="lead text-muted">
+          8 years of serving pets across the prairies
+        </p>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="feature-highlight text-center h-100">
+          <div class="feature-icon bg-winnipets-primary bg-opacity-10 rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center">
+            <i class="bi bi-thermometer-snow fs-2 text-winnipets-primary"></i>
+          </div>
+          <h4 class="fw-bold text-winnipets-primary mb-3">Climate-Tested Products</h4>
+          <p class="text-muted mb-0">
+            Every product is tested in Manitoba's extreme weather conditions. From -40°C winters to +35°C summers,
+            we ensure your pets stay comfortable year-round.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="feature-highlight text-center h-100">
+          <div class="feature-icon bg-winnipets-secondary bg-opacity-10 rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center">
+            <i class="bi bi-heart-fill fs-2 text-winnipets-secondary"></i>
+          </div>
+          <h4 class="fw-bold text-winnipets-primary mb-3">Local & Natural</h4>
+          <p class="text-muted mb-0">
+            We partner with Manitoba producers to offer locally-sourced treats and natural products.
+            Supporting local business while giving your pets the best.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="feature-highlight text-center h-100">
+          <div class="feature-icon bg-winnipets-accent bg-opacity-10 rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center">
+            <i class="bi bi-people-fill fs-2 text-winnipets-accent"></i>
+          </div>
+          <h4 class="fw-bold text-winnipets-primary mb-3">Expert Support</h4>
+          <p class="text-muted mb-0">
+            Our team includes certified pet care specialists who understand the unique needs of prairie pets.
+            Get personalized advice for your furry family.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Newsletter Signup -->
+<section class="py-5 bg-winnipets-primary text-white">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 mb-4 mb-lg-0">
+        <h3 class="fw-bold mb-3">
+          <i class="bi bi-envelope-heart me-2"></i>
+          Stay Connected with Winnipets
+        </h3>
+        <p class="mb-0 opacity-90">
+          Get seasonal pet care tips, new product alerts, and exclusive Manitoba pet owner discounts delivered to your inbox.
+        </p>
+      </div>
+      <div class="col-lg-6">
+        <form class="newsletter-form">
+          <div class="input-group">
+            <input type="email" class="form-control form-control-lg"
+                   placeholder="Enter your email address" required>
+            <button class="btn btn-light btn-lg fw-semibold px-4" type="submit">
+              Subscribe
+            </button>
+          </div>
+          <small class="text-light opacity-75 mt-2 d-block">
+            <i class="bi bi-shield-check me-1"></i>
+            We respect your privacy. Unsubscribe anytime.
+          </small>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+/* Hero Section */
+.hero-section {
+  background: linear-gradient(135deg, var(--winnipets-primary) 0%, var(--winnipets-primary-light) 50%, var(--winnipets-accent) 100%);
+  min-height: 90vh;
+  position: relative;
+}
+
+.hero-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><polygon fill="rgba(255,255,255,0.03)" points="0,1000 1000,0 1000,1000"/></svg>');
+  background-size: cover;
+}
+
+.min-vh-75 {
+  min-height: 75vh;
+}
+
+.hero-image-placeholder {
+  height: 400px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  40% {
+    transform: translateX(-50%) translateY(-10px);
+  }
+  60% {
+    transform: translateX(-50%) translateY(-5px);
+  }
+}
+
+/* Category Cards */
+.category-card {
+  padding: 2rem 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.category-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--winnipets-primary), var(--winnipets-secondary));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.category-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+.category-card:hover::before {
+  opacity: 1;
+}
+
+.category-icon {
+  width: 100px;
+  height: 100px;
+}
+
+/* Feature Highlights */
+.feature-highlight {
+  padding: 2rem 1rem;
+}
+
+.feature-icon {
+  width: 120px;
+  height: 120px;
+}
+
+/* Newsletter */
+.newsletter-form .form-control {
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.newsletter-form .form-control:focus {
+  background: white;
+  box-shadow: none;
+}
+
+.newsletter-form .btn-light {
+  border: none;
+  color: var(--winnipets-primary);
+  font-weight: 600;
+}
+
+.newsletter-form .btn-light:hover {
+  background: white;
+  color: var(--winnipets-primary-dark);
+}
+
+/* Product Cards */
+.product-card .card-img-top {
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover .card-img-top {
+  transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero-section {
+    min-height: 70vh;
+  }
+
+  .display-3 {
+    font-size: 2.5rem;
+  }
+
+  .hero-image-placeholder {
+    height: 300px;
+    margin-top: 2rem;
+  }
+
+  .category-card {
+    padding: 1.5rem 1rem;
+  }
+
+  .category-icon,
+  .feature-icon {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+/* Animations */
+.hero-content {
+  animation: fadeInUp 1s ease-out;
+}
+
+.hero-image-container {
+  animation: fadeInRight 1s ease-out 0.3s both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Scroll animations */
+.category-card,
+.feature-highlight,
+.product-card {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.category-card:nth-child(1) { animation-delay: 0.1s; }
+.category-card:nth-child(2) { animation-delay: 0.2s; }
+.category-card:nth-child(3) { animation-delay: 0.3s; }
+.category-card:nth-child(4) { animation-delay: 0.4s; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Newsletter form handling
+  const newsletterForm = document.querySelector('.newsletter-form');
+  if (newsletterForm) {
+    newsletterForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const email = this.querySelector('input[type="email"]').value;
+
+      // Show success message
+      const button = this.querySelector('button');
+      const originalText = button.textContent;
+      button.textContent = 'Subscribed!';
+      button.classList.remove('btn-light');
+      button.classList.add('btn-success');
+
+      setTimeout(() => {
+        button.textContent = originalText;
+        button.classList.remove('btn-success');
+        button.classList.add('btn-light');
+        this.querySelector('input').value = '';
+      }, 3000);
+    });
+  }
+
+  // Smooth scrolling for scroll indicator
+  const scrollIndicator = document.querySelector('.scroll-indicator');
+  if (scrollIndicator) {
+    scrollIndicator.addEventListener('click', function() {
+      const nextSection = document.querySelector('.hero-section').nextElementSibling;
+      if (nextSection) {
+        nextSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  }
+
+  // Add scroll reveal animations
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+  };
+
+  const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.animation = 'fadeInUp 0.6s ease-out forwards';
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  // Observe elements for animation
+  document.querySelectorAll('.category-card, .feature-highlight, .product-card').forEach(el => {
+    observer.observe(el);
+  });
+});
+</script>

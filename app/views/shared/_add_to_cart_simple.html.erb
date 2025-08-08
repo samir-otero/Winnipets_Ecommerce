@@ -1,30 +1,28 @@
-<%= form_with url: add_item_cart_path(product), method: :post, local: false, class: "add-to-cart-form-simple" do |f| %>
+<%= form_with url: add_item_cart_path(product), method: :post,
+               local: false, class: "add-to-cart-form-simple position-relative" do |f| %>
   <%= f.hidden_field :quantity, value: 1 %>
-  <%= f.submit "Add to Cart", class: "btn btn-sm btn-outline-primary w-100",
-               data: { disable_with: "Adding..." } %>
+  <%= f.submit "Add to Cart",
+               class: "btn btn-primary btn-sm w-100 fw-semibold",
+               data: { disable_with: "Adding..." },
+               style: "position: relative; z-index: 1;" %>
 <% end %>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Handle add to cart form submissions
-  const addToCartForms = document.querySelectorAll('.add-to-cart-form, .add-to-cart-form-simple');
+  // Handle simple add to cart form submissions
+  const simpleForms = document.querySelectorAll('.add-to-cart-form-simple');
 
-  addToCartForms.forEach(form => {
+  simpleForms.forEach(form => {
     form.addEventListener('ajax:success', function(event) {
       const response = event.detail[0];
-
       if (response.success) {
-        // Show success message
-        showNotification(response.message, 'success');
-
         // Update cart count in navigation
         updateCartCount(response.cart_count);
 
-        // Reset form
-        const quantityInput = form.querySelector('input[name="quantity"]');
-        if (quantityInput && quantityInput.type === 'number') {
-          quantityInput.value = 1;
-        }
+        // Show brief success feedback
+        showQuickSuccess(form);
+
+        showNotification(response.message || 'Item added to cart!', 'success');
       }
     });
 
@@ -32,33 +30,112 @@ document.addEventListener('DOMContentLoaded', function() {
       showNotification('Error adding item to cart. Please try again.', 'error');
     });
   });
-
-  function showNotification(message, type) {
-    // Create notification element
-    const notification = document.createElement('div');
-    notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
-    notification.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
-    notification.innerHTML = `
-      ${message}
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-
-    document.body.appendChild(notification);
-
-    // Auto-remove after 3 seconds
-    setTimeout(() => {
-      if (notification.parentNode) {
-        notification.remove();
-      }
-    }, 3000);
-  }
-
-  function updateCartCount(count) {
-    const cartCountElement = document.querySelector('.cart-count');
-    if (cartCountElement) {
-      cartCountElement.textContent = count;
-      cartCountElement.style.display = count > 0 ? 'inline' : 'none';
-    }
-  }
 });
+
+function showQuickSuccess(form) {
+  const button = form.querySelector('input[type="submit"]');
+  const originalText = button.value;
+
+  // Change button appearance temporarily
+  button.classList.remove('btn-primary');
+  button.classList.add('btn-success');
+  button.value = '✓ Added!';
+  button.disabled = true;
+
+  setTimeout(() => {
+    button.classList.remove('btn-success');
+    button.classList.add('btn-primary');
+    button.value = originalText;
+    button.disabled = false;
+  }, 1500);
+}
+
+function updateCartCount(count) {
+  const cartCountElements = document.querySelectorAll('.cart-count');
+  cartCountElements.forEach(element => {
+    element.textContent = count;
+    element.style.display = count > 0 ? 'inline' : 'none';
+
+    // Add bounce animation
+    element.style.animation = 'bounce 0.5s ease';
+    setTimeout(() => {
+      element.style.animation = '';
+    }, 500);
+  });
+}
+
+function showNotification(message, type) {
+  // Remove existing notifications
+  const existingNotifications = document.querySelectorAll('.simple-cart-notification');
+  existingNotifications.forEach(notification => notification.remove());
+
+  // Create new notification
+  const notification = document.createElement('div');
+  notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show simple-cart-notification position-fixed shadow-lg`;
+  notification.style.cssText = 'top: 80px; right: 20px; z-index: 1050; min-width: 300px; border: none; border-radius: 10px;';
+  notification.innerHTML = `
+    <div class="d-flex align-items-center">
+      <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+      <span class="fw-semibold">${message}</span>
+      <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+    </div>
+  `;
+
+  document.body.appendChild(notification);
+
+  // Auto-remove after 3 seconds
+  setTimeout(() => {
+    if (notification.parentNode) {
+      notification.classList.remove('show');
+      setTimeout(() => notification.remove(), 150);
+    }
+  }, 3000);
+}
 </script>
+
+<style>
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+.add-to-cart-form-simple .btn {
+  transition: all 0.3s ease;
+}
+
+.add-to-cart-form-simple .btn:hover {
+  transform: translateY(-1px);
+}
+
+.add-to-cart-form-simple .btn[data-disable-with]:disabled {
+  position: relative;
+  color: transparent;
+}
+
+.add-to-cart-form-simple .btn[data-disable-with]:disabled::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  margin-left: -8px;
+  margin-top: -8px;
+  border: 2px solid transparent;
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 1s ease infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>

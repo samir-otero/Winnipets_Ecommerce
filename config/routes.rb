@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
 
   # Customer-facing routes
-  root 'products#index'  # Main homepage (✯ 2.1)
+  root 'home#index'  # Main homepage (✯ 2.1)
   resources :products, only: [:index, :show]
 
   # Shopping Cart routes (✯ 3.1.1)
