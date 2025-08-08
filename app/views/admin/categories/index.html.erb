@@ -1,0 +1,79 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h2">Categories</h1>
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <div class="btn-group me-2">
+      <%= link_to "Add Category", new_admin_category_path, class: "btn btn-sm btn-primary" %>
+    </div>
+  </div>
+</div>
+
+<!-- Search Form -->
+<div class="card mb-4">
+  <div class="card-body">
+    <%= form_with url: admin_categories_path, method: :get, class: "row g-3", local: true do |form| %>
+      <div class="col-md-8">
+        <%= form.text_field :search, placeholder: "Search categories...", value: params[:search], class: "form-control" %>
+      </div>
+      <div class="col-md-4">
+        <%= form.submit "Search", class: "btn btn-outline-secondary me-2" %>
+        <%= link_to "Clear", admin_categories_path, class: "btn btn-outline-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Categories Table -->
+<div class="card shadow">
+  <div class="card-header py-3">
+    <h6 class="m-0 font-weight-bold text-primary">All Categories (<%= @categories.count %>)</h6>
+  </div>
+  <div class="card-body">
+    <% if @categories.any? %>
+      <div class="table-responsive">
+        <table class="table table-bordered" width="100%" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Products</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @categories.each do |category| %>
+              <tr>
+                <td><%= link_to category.name, admin_category_path(category), class: "text-decoration-none" %></td>
+                <td class="text-truncate" style="max-width: 300px;">
+                  <%= truncate(category.description, length: 100) %>
+                </td>
+                <td>
+                  <span class="badge bg-info"><%= category.products.count %></span>
+                </td>
+                <td>
+                  <%= link_to admin_category_path(category), class: "btn btn-info btn-sm me-1" do %>
+                    <i class="bi bi-eye"></i>
+                  <% end %>
+                  <%= link_to edit_admin_category_path(category), class: "btn btn-warning btn-sm me-1" do %>
+                    <i class="bi bi-pencil"></i>
+                  <% end %>
+                  <%= link_to admin_category_path(category), method: :delete,
+                      class: "btn btn-danger btn-sm",
+                      confirm: "Are you sure you want to delete '#{category.name}'? This action cannot be undone.",
+                      data: { turbo_method: :delete } do %>
+                    <i class="bi bi-trash"></i>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="text-center py-4">
+        <i class="bi bi-tags" style="font-size: 3rem; color: #ccc;"></i>
+        <p class="text-muted mt-3">No categories found.</p>
+        <%= link_to "Add First Category", new_admin_category_path, class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

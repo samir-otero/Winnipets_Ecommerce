@@ -5,27 +5,31 @@ class Order < ApplicationRecord
   has_many :order_items, dependent: :destroy
   has_many :products, through: :order_items
 
+  STATUSES = %w[pending confirmed processing shipped delivered cancelled].freeze
+
   validates :order_number, presence: true, uniqueness: true
   validates :subtotal, :tax_amount, :shipping_cost, :total_amount, presence: true,
             numericality: { greater_than_or_equal_to: 0 }
-  validates :status, presence: true, inclusion: { in: %w[pending paid shipped delivered cancelled] }
+  validates :status, presence: true, inclusion: { in: STATUSES }
   validates :gst_rate, :pst_rate, :hst_rate, presence: true,
             numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }
 
   before_validation :generate_order_number, on: :create
+  before_validation :set_default_status, on: :create
 
-  enum status: {
-    pending: 0,
-    confirmed: 1,
-    processing: 2,
-    shipped: 3,
-    delivered: 4,
-    cancelled: 5
-    }
+  # === String-based enum helpers ===
+  STATUSES.each do |status_name|
+    scope status_name, -> { where(status: status_name) }
+    define_method("#{status_name}?") { status == status_name }
+  end
 
   private
 
   def generate_order_number
     self.order_number = "WP#{Date.current.strftime('%Y%m%d')}#{SecureRandom.hex(4).upcase}"
+  end
+
+  def set_default_status
+    self.status ||= "pending"
   end
 end

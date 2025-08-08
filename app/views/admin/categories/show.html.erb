@@ -1,0 +1,110 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h2"><%= @category.name %></h1>
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <div class="btn-group me-2">
+      <%= link_to "Edit Category", edit_admin_category_path(@category), class: "btn btn-sm btn-warning" %>
+      <%= link_to "Delete Category", admin_category_path(@category), method: :delete,
+          class: "btn btn-sm btn-danger",
+          confirm: "Are you sure you want to delete '#{@category.name}'? This action cannot be undone.",
+          data: { turbo_method: :delete } %>
+    </div>
+    <div class="btn-group">
+      <%= link_to "Back to Categories", admin_categories_path, class: "btn btn-sm btn-outline-secondary" %>
+    </div>
+  </div>
+</div>
+
+<!-- Category Details -->
+<div class="row mb-4">
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        <h6 class="m-0 font-weight-bold text-primary">Category Details</h6>
+      </div>
+      <div class="card-body">
+        <p><strong>Name:</strong> <%= @category.name %></p>
+        <p><strong>Description:</strong></p>
+        <p class="text-muted"><%= simple_format(@category.description) %></p>
+        <p><strong>Created:</strong> <%= @category.created_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+        <p><strong>Updated:</strong> <%= @category.updated_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        <h6 class="m-0 font-weight-bold text-primary">Statistics</h6>
+      </div>
+      <div class="card-body">
+        <p><strong>Total Products:</strong> <span class="badge bg-info"><%= @products.count %></span></p>
+        <p><strong>Active Products:</strong> <span class="badge bg-success"><%= @products.where(is_active: true).count %></span></p>
+        <p><strong>Inactive Products:</strong> <span class="badge bg-secondary"><%= @products.where(is_active: false).count %></span></p>
+        <hr>
+        <%= link_to "Add Product to Category", new_admin_product_path(category_id: @category.id), class: "btn btn-primary btn-sm" %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Products in Category -->
+<div class="card shadow">
+  <div class="card-header py-3">
+    <h6 class="m-0 font-weight-bold text-primary">Products in this Category (<%= @products.count %>)</h6>
+  </div>
+  <div class="card-body">
+    <% if @products.any? %>
+      <div class="table-responsive">
+        <table class="table table-bordered" width="100%" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>SKU</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @products.each do |product| %>
+              <tr>
+                <td><%= link_to product.name, admin_product_path(product), class: "text-decoration-none" %></td>
+                <td><%= product.sku %></td>
+                <td>
+                  <% if product.sale_price.present? %>
+                    <span class="text-muted text-decoration-line-through">$<%= number_with_precision(product.price, precision: 2) %></span>
+                    <span class="text-success fw-bold">$<%= number_with_precision(product.sale_price, precision: 2) %></span>
+                  <% else %>
+                    $<%= number_with_precision(product.price, precision: 2) %>
+                  <% end %>
+                </td>
+                <td>
+                  <span class="badge bg-<%= product.stock_quantity > 0 ? 'success' : 'danger' %>">
+                    <%= product.stock_quantity %>
+                  </span>
+                </td>
+                <td>
+                  <span class="badge bg-<%= product.is_active? ? 'success' : 'secondary' %>">
+                    <%= product.is_active? ? 'Active' : 'Inactive' %>
+                  </span>
+                </td>
+                <td>
+                  <%= link_to admin_product_path(product), class: "btn btn-info btn-sm" do %>
+                    <i class="bi bi-eye"></i>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="text-center py-4">
+        <i class="bi bi-box" style="font-size: 3rem; color: #ccc;"></i>
+        <p class="text-muted mt-3">No products in this category yet.</p>
+        <%= link_to "Add First Product", new_admin_product_path(category_id: @category.id), class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

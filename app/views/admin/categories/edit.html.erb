@@ -1,0 +1,76 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h2">Edit Category: <%= @category.name %></h1>
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <div class="btn-group">
+      <%= link_to "View Category", admin_category_path(@category), class: "btn btn-sm btn-info" %>
+      <%= link_to "Back to Categories", admin_categories_path, class: "btn btn-sm btn-outline-secondary" %>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <h6 class="m-0 font-weight-bold text-primary">Category Information</h6>
+      </div>
+      <div class="card-body">
+        <%= form_with model: [:admin, @category], class: "needs-validation", novalidate: true do |form| %>
+          <% if @category.errors.any? %>
+            <div class="alert alert-danger">
+              <h6>Please fix the following errors:</h6>
+              <ul class="mb-0">
+                <% @category.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="mb-3">
+            <%= form.label :name, class: "form-label" %>
+            <%= form.text_field :name, class: "form-control #{'is-invalid' if @category.errors[:name].any?}", required: true %>
+            <% if @category.errors[:name].any? %>
+              <div class="invalid-feedback">
+                <%= @category.errors[:name].first %>
+              </div>
+            <% end %>
+          </div>
+
+          <div class="mb-3">
+            <%= form.label :description, class: "form-label" %>
+            <%= form.text_area :description, rows: 4, class: "form-control #{'is-invalid' if @category.errors[:description].any?}" %>
+            <div class="form-text">Provide a brief description of this category.</div>
+            <% if @category.errors[:description].any? %>
+              <div class="invalid-feedback">
+                <%= @category.errors[:description].first %>
+              </div>
+            <% end %>
+          </div>
+
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <%= link_to "Cancel", admin_category_path(@category), class: "btn btn-secondary" %>
+            <%= form.submit "Update Category", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header">
+        <h6 class="m-0 font-weight-bold text-primary">Category Stats</h6>
+      </div>
+      <div class="card-body">
+        <p><strong>Products:</strong> <span class="badge bg-info"><%= @category.products.count %></span></p>
+        <p><strong>Created:</strong> <%= @category.created_at.strftime("%b %d, %Y") %></p>
+        <p><strong>Last Updated:</strong> <%= @category.updated_at.strftime("%b %d, %Y") %></p>
+        <hr>
+        <div class="d-grid">
+          <%= link_to "View Products", admin_category_path(@category), class: "btn btn-outline-primary btn-sm" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
