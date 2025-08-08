@@ -1,32 +1,41 @@
-<% content_for :title, "Winnipets - Premium Pet Supplies for Manitoba" %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Winnipets - Premium Pet Supplies for Manitoba</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
 
 <!-- Hero Section -->
 <section class="hero-section position-relative overflow-hidden">
   <div class="hero-background"></div>
-  <div class="container">
+  <div class="hero-overlay"></div>
+  <div class="container position-relative">
     <div class="row align-items-center min-vh-75">
       <div class="col-lg-6">
-        <div class="hero-content text-white">
-          <h1 class="display-3 fw-bold mb-4">
+        <div class="hero-content">
+          <h1 class="display-3 fw-bold mb-4 hero-title">
             Premium Pet Care for
             <span class="text-warning">Manitoba</span> Families
           </h1>
-          <p class="lead mb-4 opacity-90">
+          <p class="lead mb-4 hero-text">
             From arctic winter gear to summer cooling mats, we provide quality pet supplies
             designed for Manitoba's unique climate. Trusted by pet families for over 8 years.
           </p>
           <div class="d-flex flex-column flex-sm-row gap-3 mb-4">
-            <%= link_to "Shop All Products", products_path,
-                       class: "btn btn-primary btn-lg px-5 py-3 fw-bold" %>
-            <%= link_to "Winter Collection", products_path(category_id: 'winter'),
-                       class: "btn btn-outline-light btn-lg px-5 py-3 fw-bold" %>
+            <a href="#" class="btn btn-primary btn-lg px-5 py-3 fw-bold">Shop All Products</a>
+            <a href="#" class="btn btn-secondary btn-lg px-5 py-3 fw-bold">Winter Collection</a>
           </div>
           <div class="hero-features d-flex flex-wrap gap-4">
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center hero-feature">
               <i class="bi bi-truck fs-4 me-2 text-warning"></i>
               <span class="fw-semibold">Free Shipping Over $50</span>
             </div>
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center hero-feature">
               <i class="bi bi-geo-alt fs-4 me-2 text-warning"></i>
               <span class="fw-semibold">Local Manitoba Business</span>
             </div>
@@ -68,24 +77,49 @@
     </div>
 
     <div class="row g-4">
-      <% [
-        { name: "Winter Gear", icon: "snow", description: "Coats, boots & warming accessories", color: "accent" },
-        { name: "Local Treats", icon: "heart-fill", description: "Manitoba-made natural treats", color: "secondary" },
-        { name: "Grooming", icon: "brush", description: "Professional grooming supplies", color: "primary" },
-        { name: "Outdoor Play", icon: "tree", description: "Toys & gear for prairie adventures", color: "success" }
-      ].each do |category| %>
-        <div class="col-lg-3 col-md-6">
-          <div class="category-card h-100 text-center">
-            <div class="category-icon bg-<%= category[:color] %> bg-opacity-10 rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center">
-              <i class="bi bi-<%= category[:icon] %> fs-2 text-<%= category[:color] %>"></i>
-            </div>
-            <h4 class="fw-bold text-winnipets-primary mb-2"><%= category[:name] %></h4>
-            <p class="text-muted mb-3"><%= category[:description] %></p>
-            <%= link_to "Shop Now", products_path,
-                       class: "btn btn-outline-winnipets-primary stretched-link" %>
+      <div class="col-lg-3 col-md-6">
+        <div class="category-card h-100 text-center">
+          <div class="category-icon bg-primary bg-opacity-10 rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center">
+            <i class="bi bi-snow fs-2 text-primary"></i>
           </div>
+          <h4 class="fw-bold text-winnipets-primary mb-2">Winter Gear</h4>
+          <p class="text-muted mb-3">Coats, boots & warming accessories</p>
+          <a href="#" class="btn btn-outline-winnipets-primary stretched-link">Shop Now</a>
         </div>
-      <% end %>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <div class="category-card h-100 text-center">
+          <div class="category-icon bg-secondary bg-opacity-10 rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center">
+            <i class="bi bi-heart-fill fs-2 text-secondary"></i>
+          </div>
+          <h4 class="fw-bold text-winnipets-primary mb-2">Local Treats</h4>
+          <p class="text-muted mb-3">Manitoba-made natural treats</p>
+          <a href="#" class="btn btn-outline-winnipets-primary stretched-link">Shop Now</a>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <div class="category-card h-100 text-center">
+          <div class="category-icon bg-primary bg-opacity-10 rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center">
+            <i class="bi bi-brush fs-2 text-primary"></i>
+          </div>
+          <h4 class="fw-bold text-winnipets-primary mb-2">Grooming</h4>
+          <p class="text-muted mb-3">Professional grooming supplies</p>
+          <a href="#" class="btn btn-outline-winnipets-primary stretched-link">Shop Now</a>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <div class="category-card h-100 text-center">
+          <div class="category-icon bg-success bg-opacity-10 rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center">
+            <i class="bi bi-tree fs-2 text-success"></i>
+          </div>
+          <h4 class="fw-bold text-winnipets-primary mb-2">Outdoor Play</h4>
+          <p class="text-muted mb-3">Toys & gear for prairie adventures</p>
+          <a href="#" class="btn btn-outline-winnipets-primary stretched-link">Shop Now</a>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -102,67 +136,203 @@
             </h2>
             <p class="text-muted mb-0">Our most popular items this season</p>
           </div>
-          <%= link_to "View All Products", products_path,
-                     class: "btn btn-primary" %>
+          <a href="#" class="btn btn-primary">View All Products</a>
         </div>
       </div>
     </div>
 
     <div class="row g-4">
-      <% (1..4).each do |i| %>
-        <div class="col-lg-3 col-md-6">
-          <div class="card h-100 shadow-winnipets product-card">
-            <div class="position-relative overflow-hidden">
-              <div class="card-img-top d-flex align-items-center justify-content-center bg-light"
-                   style="height: 250px;">
-                <div class="text-center text-muted">
-                  <i class="bi bi-image fs-1 mb-2"></i>
-                  <p class="small mb-0">Product Image <%= i %></p>
-                </div>
-              </div>
-              <div class="position-absolute top-0 end-0 m-2">
-                <span class="badge bg-danger fs-6">
-                  <i class="bi bi-percent me-1"></i>Sale
-                </span>
+      <div class="col-lg-3 col-md-6">
+        <div class="card h-100 shadow-winnipets product-card">
+          <div class="position-relative overflow-hidden">
+            <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 250px;">
+              <div class="text-center text-muted">
+                <i class="bi bi-image fs-1 mb-2"></i>
+                <p class="small mb-0">Product Image 1</p>
               </div>
             </div>
+            <div class="position-absolute top-0 end-0 m-2">
+              <span class="badge bg-danger fs-6">
+                <i class="bi bi-percent me-1"></i>Sale
+              </span>
+            </div>
+          </div>
 
-            <div class="card-body d-flex flex-column">
-              <div class="mb-2">
-                <span class="badge bg-secondary bg-opacity-10 text-winnipets-secondary">
-                  <i class="bi bi-tag me-1"></i>Sample Category
-                </span>
+          <div class="card-body d-flex flex-column">
+            <div class="mb-2">
+              <span class="badge bg-secondary bg-opacity-10 text-winnipets-secondary">
+                <i class="bi bi-tag me-1"></i>Sample Category
+              </span>
+            </div>
+
+            <h5 class="card-title text-winnipets-primary">Sample Product Name 1</h5>
+
+            <div class="mb-3">
+              <span class="h5 text-danger fw-bold">$29.99</span>
+              <span class="text-muted text-decoration-line-through ms-2">$39.99</span>
+            </div>
+
+            <p class="card-text text-muted small flex-grow-1">
+              High-quality pet supply designed specifically for Manitoba's climate conditions.
+            </p>
+
+            <div class="mt-auto">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <small class="text-success d-flex align-items-center">
+                  <i class="bi bi-check-circle-fill me-1"></i>
+                  <span class="fw-semibold">In Stock</span>
+                </small>
               </div>
 
-              <h5 class="card-title text-winnipets-primary">
-                Sample Product Name <%= i %>
-              </h5>
-
-              <div class="mb-3">
-                <span class="h5 text-danger fw-bold">$29.99</span>
-                <span class="text-muted text-decoration-line-through ms-2">$39.99</span>
-              </div>
-
-              <p class="card-text text-muted small flex-grow-1">
-                High-quality pet supply designed specifically for Manitoba's climate conditions.
-              </p>
-
-              <div class="mt-auto">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                  <small class="text-success d-flex align-items-center">
-                    <i class="bi bi-check-circle-fill me-1"></i>
-                    <span class="fw-semibold">In Stock</span>
-                  </small>
-                </div>
-
-                <button class="btn btn-primary w-100 fw-semibold">
-                  Add to Cart
-                </button>
-              </div>
+              <button class="btn btn-primary w-100 fw-semibold">Add to Cart</button>
             </div>
           </div>
         </div>
-      <% end %>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <div class="card h-100 shadow-winnipets product-card">
+          <div class="position-relative overflow-hidden">
+            <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 250px;">
+              <div class="text-center text-muted">
+                <i class="bi bi-image fs-1 mb-2"></i>
+                <p class="small mb-0">Product Image 2</p>
+              </div>
+            </div>
+            <div class="position-absolute top-0 end-0 m-2">
+              <span class="badge bg-danger fs-6">
+                <i class="bi bi-percent me-1"></i>Sale
+              </span>
+            </div>
+          </div>
+
+          <div class="card-body d-flex flex-column">
+            <div class="mb-2">
+              <span class="badge bg-secondary bg-opacity-10 text-winnipets-secondary">
+                <i class="bi bi-tag me-1"></i>Sample Category
+              </span>
+            </div>
+
+            <h5 class="card-title text-winnipets-primary">Sample Product Name 2</h5>
+
+            <div class="mb-3">
+              <span class="h5 text-danger fw-bold">$29.99</span>
+              <span class="text-muted text-decoration-line-through ms-2">$39.99</span>
+            </div>
+
+            <p class="card-text text-muted small flex-grow-1">
+              High-quality pet supply designed specifically for Manitoba's climate conditions.
+            </p>
+
+            <div class="mt-auto">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <small class="text-success d-flex align-items-center">
+                  <i class="bi bi-check-circle-fill me-1"></i>
+                  <span class="fw-semibold">In Stock</span>
+                </small>
+              </div>
+
+              <button class="btn btn-primary w-100 fw-semibold">Add to Cart</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <div class="card h-100 shadow-winnipets product-card">
+          <div class="position-relative overflow-hidden">
+            <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 250px;">
+              <div class="text-center text-muted">
+                <i class="bi bi-image fs-1 mb-2"></i>
+                <p class="small mb-0">Product Image 3</p>
+              </div>
+            </div>
+            <div class="position-absolute top-0 end-0 m-2">
+              <span class="badge bg-danger fs-6">
+                <i class="bi bi-percent me-1"></i>Sale
+              </span>
+            </div>
+          </div>
+
+          <div class="card-body d-flex flex-column">
+            <div class="mb-2">
+              <span class="badge bg-secondary bg-opacity-10 text-winnipets-secondary">
+                <i class="bi bi-tag me-1"></i>Sample Category
+              </span>
+            </div>
+
+            <h5 class="card-title text-winnipets-primary">Sample Product Name 3</h5>
+
+            <div class="mb-3">
+              <span class="h5 text-danger fw-bold">$29.99</span>
+              <span class="text-muted text-decoration-line-through ms-2">$39.99</span>
+            </div>
+
+            <p class="card-text text-muted small flex-grow-1">
+              High-quality pet supply designed specifically for Manitoba's climate conditions.
+            </p>
+
+            <div class="mt-auto">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <small class="text-success d-flex align-items-center">
+                  <i class="bi bi-check-circle-fill me-1"></i>
+                  <span class="fw-semibold">In Stock</span>
+                </small>
+              </div>
+
+              <button class="btn btn-primary w-100 fw-semibold">Add to Cart</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <div class="card h-100 shadow-winnipets product-card">
+          <div class="position-relative overflow-hidden">
+            <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 250px;">
+              <div class="text-center text-muted">
+                <i class="bi bi-image fs-1 mb-2"></i>
+                <p class="small mb-0">Product Image 4</p>
+              </div>
+            </div>
+            <div class="position-absolute top-0 end-0 m-2">
+              <span class="badge bg-danger fs-6">
+                <i class="bi bi-percent me-1"></i>Sale
+              </span>
+            </div>
+          </div>
+
+          <div class="card-body d-flex flex-column">
+            <div class="mb-2">
+              <span class="badge bg-secondary bg-opacity-10 text-winnipets-secondary">
+                <i class="bi bi-tag me-1"></i>Sample Category
+              </span>
+            </div>
+
+            <h5 class="card-title text-winnipets-primary">Sample Product Name 4</h5>
+
+            <div class="mb-3">
+              <span class="h5 text-danger fw-bold">$29.99</span>
+              <span class="text-muted text-decoration-line-through ms-2">$39.99</span>
+            </div>
+
+            <p class="card-text text-muted small flex-grow-1">
+              High-quality pet supply designed specifically for Manitoba's climate conditions.
+            </p>
+
+            <div class="mt-auto">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <small class="text-success d-flex align-items-center">
+                  <i class="bi bi-check-circle-fill me-1"></i>
+                  <span class="fw-semibold">In Stock</span>
+                </small>
+              </div>
+
+              <button class="btn btn-primary w-100 fw-semibold">Add to Cart</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -233,21 +403,21 @@
           <i class="bi bi-envelope-heart me-2"></i>
           Stay Connected with Winnipets
         </h3>
-        <p class="mb-0 opacity-90">
+        <p class="mb-0 opacity-90 text-dark">
           Get seasonal pet care tips, new product alerts, and exclusive Manitoba pet owner discounts delivered to your inbox.
         </p>
       </div>
       <div class="col-lg-6">
         <form class="newsletter-form">
-          <div class="input-group">
-            <input type="email" class="form-control form-control-lg"
+          <div class="input-group newsletter-input-group">
+            <input type="email" class="form-control form-control-lg newsletter-input"
                    placeholder="Enter your email address" required>
             <button class="btn btn-light btn-lg fw-semibold px-4" type="submit">
               Subscribe
             </button>
           </div>
-          <small class="text-light opacity-75 mt-2 d-block">
-            <i class="bi bi-shield-check me-1"></i>
+          <small class="text-dark opacity-75 mt-2 d-block">
+            <i class="bi bi-shield-check me-1 text-dark"></i>
             We respect your privacy. Unsubscribe anytime.
           </small>
         </form>
@@ -257,11 +427,80 @@
 </section>
 
 <style>
+/* Newsletter Input Group Border Styling */
+.newsletter-input-group {
+  border: 2px solid var(--winnipets-primary);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.95);
+  overflow: hidden;
+}
+
+.newsletter-input {
+  border: none;
+  border-right: 2px solid var(--winnipets-primary-light);
+  background: transparent;
+  color: var(--winnipets-primary-dark);
+  box-shadow: none;
+}
+
+.newsletter-input:focus {
+  border: none;
+  border-right: 2px solid var(--winnipets-accent);
+  outline: none;
+  background: #fff;
+  box-shadow: 0 0 0 2px var(--winnipets-secondary-light);
+}
+
+/* Existing styles ... */
+:root {
+  --winnipets-primary: #8B4513;
+  --winnipets-primary-light: #A0522D;
+  --winnipets-primary-dark: #654321;
+  --winnipets-secondary: #6B8E60;
+  --winnipets-secondary-light: #8FA688;
+  --winnipets-accent: #5A7B8C;
+  --winnipets-accent-light: #7A9BAC;
+  --winnipets-cream: #F5F5DC;
+  --winnipets-light-cream: #FEFEF8;
+  --winnipets-warm-gray: #8B8680;
+  --winnipets-text-dark: #2C2C2C;
+  --winnipets-success: #4A7C4A;
+  --winnipets-warning: #D4A574;
+  --winnipets-danger: #B85450;
+  --winnipets-info: #5A7B8C;
+}
+
+/* Typography */
+body {
+  font-family: 'Roboto', sans-serif;
+  color: var(--winnipets-text-dark);
+  background-color: var(--winnipets-light-cream);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  color: var(--winnipets-primary-dark);
+  margin-bottom: 1rem;
+}
+
 /* Hero Section */
 .hero-section {
-  background: linear-gradient(135deg, var(--winnipets-primary) 0%, var(--winnipets-primary-light) 50%, var(--winnipets-accent) 100%);
+  background: linear-gradient(135deg, var(--winnipets-primary-dark) 0%, var(--winnipets-primary) 70%, var(--winnipets-primary-light) 100%);
   min-height: 90vh;
   position: relative;
+}
+
+/* Dark overlay for better text contrast */
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1;
 }
 
 .hero-background {
@@ -274,6 +513,32 @@
   background-size: cover;
 }
 
+.hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-title {
+  color: #ffffff !important;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  font-weight: 700;
+}
+
+.hero-text {
+  color: #f8f9fa !important;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+  opacity: 0.95;
+}
+
+.hero-feature {
+  color: #ffffff !important;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.hero-feature span {
+  color: #ffffff !important;
+}
+
 .min-vh-75 {
   min-height: 75vh;
 }
@@ -282,6 +547,7 @@
   height: 400px;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .scroll-indicator {
@@ -290,6 +556,7 @@
   left: 50%;
   transform: translateX(-50%);
   animation: bounce 2s infinite;
+  z-index: 2;
 }
 
 @keyframes bounce {
@@ -302,6 +569,53 @@
   60% {
     transform: translateX(-50%) translateY(-5px);
   }
+}
+
+/* Button Styling */
+.btn-primary {
+  background-color: var(--winnipets-primary);
+  border-color: var(--winnipets-primary);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--winnipets-primary-light);
+  border-color: var(--winnipets-primary-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+}
+
+.btn-outline-light {
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  color: #ffffff;
+  background: transparent;
+}
+
+.btn-outline-light:hover,
+.btn-outline-light:focus {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: var(--winnipets-primary-dark);
+  border-color: rgba(255, 255, 255, 0.9);
+}
+
+.btn-outline-winnipets-primary {
+  color: var(--winnipets-primary);
+  border: 2px solid var(--winnipets-primary);
+  background-color: transparent;
+}
+
+.btn-outline-winnipets-primary:hover,
+.btn-outline-winnipets-primary:focus {
+  background-color: var(--winnipets-primary);
+  border-color: var(--winnipets-primary);
+  color: white;
 }
 
 /* Category Cards */
@@ -381,6 +695,14 @@
 .product-card:hover .card-img-top {
   transform: scale(1.05);
 }
+
+.product-card .card-title {
+  color: var(--winnipets-primary-dark);
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+
 
 /* Responsive Design */
 @media (max-width: 768px) {

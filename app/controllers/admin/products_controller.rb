@@ -6,7 +6,7 @@ class Admin::ProductsController < Admin::ApplicationController
 
     # Apply search filter
     if params[:search].present?
-      @products = @products.where("name ILIKE ?", "%#{params[:search]}%")
+      @products = @products.where("name LIKE ?", "%#{params[:search]}%")
     end
 
     # Apply category filter

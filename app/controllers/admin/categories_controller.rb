@@ -6,7 +6,7 @@ class Admin::CategoriesController < Admin::ApplicationController
 
     # Apply search filter
     if params[:search].present?
-      @categories = @categories.where("name ILIKE ?", "%#{params[:search]}%")
+      @categories = @categories.where("name LIKE ?", "%#{params[:search]}%")
     end
 
     # Add pagination - 10 categories per page
