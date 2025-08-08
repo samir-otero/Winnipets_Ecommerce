@@ -126,7 +126,7 @@ h6 { font-size: 1rem; font-weight: 500; }
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
   font-size: 1.75rem;
-  color: white !important;
+  color: var(--winnipets-light-cream) !important;
 
   i {
     color: #ff69b4; // Pink heart for pet theme
@@ -141,7 +141,7 @@ h6 { font-size: 1rem; font-weight: 500; }
 }
 
 .navbar-nav .nav-link {
-  color: white !important;
+  color: var(--winnipets-light-cream) !important;
   font-weight: 500;
   margin: 0 0.5rem;
   padding: 0.5rem 1rem !important;
@@ -346,15 +346,15 @@ footer {
   color: white;
 
   h5, h6 {
-    color: var(--winnipets-cream);
+    color: var(--winnipets-light-cream);
   }
 
   a {
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(245, 245, 220, 0.8);
     transition: color 0.3s ease;
 
     &:hover {
-      color: var(--winnipets-cream);
+      color: var(--winnipets-light-cream);
       text-decoration: none;
     }
   }
