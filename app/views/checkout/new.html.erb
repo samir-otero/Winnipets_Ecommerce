@@ -20,48 +20,55 @@
               </div>
             <% end %>
 
-            <%= f.fields_for :guest_user, @guest_user do |user_form| %>
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <%= user_form.label :first_name, class: "form-label" %>
-                  <%= user_form.text_field :first_name, class: "form-control #{'is-invalid' if @guest_user.errors[:first_name].any?}" %>
-                  <% if @guest_user.errors[:first_name].any? %>
-                    <div class="invalid-feedback">
-                      <%= @guest_user.errors[:first_name].first %>
-                    </div>
-                  <% end %>
-                </div>
-                <div class="col-md-6 mb-3">
-                  <%= user_form.label :last_name, class: "form-label" %>
-                  <%= user_form.text_field :last_name, class: "form-control #{'is-invalid' if @guest_user.errors[:last_name].any?}" %>
-                  <% if @guest_user.errors[:last_name].any? %>
-                    <div class="invalid-feedback">
-                      <%= @guest_user.errors[:last_name].first %>
-                    </div>
-                  <% end %>
-                </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <%= f.label "guest_user[first_name]", "First Name", class: "form-label" %>
+                <%= f.text_field "guest_user[first_name]",
+                    value: @guest_user.first_name,
+                    class: "form-control #{'is-invalid' if @guest_user.errors[:first_name].any?}" %>
+                <% if @guest_user.errors[:first_name].any? %>
+                  <div class="invalid-feedback">
+                    <%= @guest_user.errors[:first_name].first %>
+                  </div>
+                <% end %>
               </div>
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <%= user_form.label :email, class: "form-label" %>
-                  <%= user_form.email_field :email, class: "form-control #{'is-invalid' if @guest_user.errors[:email].any?}" %>
-                  <% if @guest_user.errors[:email].any? %>
-                    <div class="invalid-feedback">
-                      <%= @guest_user.errors[:email].first %>
-                    </div>
-                  <% end %>
-                </div>
-                <div class="col-md-6 mb-3">
-                  <%= user_form.label :phone, class: "form-label" %>
-                  <%= user_form.telephone_field :phone, class: "form-control #{'is-invalid' if @guest_user.errors[:phone].any?}" %>
-                  <% if @guest_user.errors[:phone].any? %>
-                    <div class="invalid-feedback">
-                      <%= @guest_user.errors[:phone].first %>
-                    </div>
-                  <% end %>
-                </div>
+              <div class="col-md-6 mb-3">
+                <%= f.label "guest_user[last_name]", "Last Name", class: "form-label" %>
+                <%= f.text_field "guest_user[last_name]",
+                    value: @guest_user.last_name,
+                    class: "form-control #{'is-invalid' if @guest_user.errors[:last_name].any?}" %>
+                <% if @guest_user.errors[:last_name].any? %>
+                  <div class="invalid-feedback">
+                    <%= @guest_user.errors[:last_name].first %>
+                  </div>
+                <% end %>
               </div>
-            <% end %>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <%= f.label "guest_user[email]", "Email", class: "form-label" %>
+                <%= f.email_field "guest_user[email]",
+                    value: @guest_user.email,
+                    class: "form-control #{'is-invalid' if @guest_user.errors[:email].any?}" %>
+                <% if @guest_user.errors[:email].any? %>
+                  <div class="invalid-feedback">
+                    <%= @guest_user.errors[:email].first %>
+                  </div>
+                <% end %>
+              </div>
+              <div class="col-md-6 mb-3">
+                <%= f.label "guest_user[phone]", "Phone", class: "form-label" %>
+                <%= f.telephone_field "guest_user[phone]",
+                    value: @guest_user.phone,
+                    class: "form-control #{'is-invalid' if @guest_user.errors[:phone].any?}" %>
+                <% if @guest_user.errors[:phone].any? %>
+                  <div class="invalid-feedback">
+                    <%= @guest_user.errors[:phone].first %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -81,61 +88,68 @@
               </div>
             <% end %>
 
-            <%= f.fields_for :address, @address do |address_form| %>
-              <div class="mb-3">
-                <%= address_form.label :address_line_1, "Address", class: "form-label" %>
-                <%= address_form.text_field :address_line_1, class: "form-control #{'is-invalid' if @address.errors[:address_line_1].any?}" %>
-                <% if @address.errors[:address_line_1].any? %>
+            <div class="mb-3">
+              <%= f.label "address[address_line_1]", "Address", class: "form-label" %>
+              <%= f.text_field "address[address_line_1]",
+                  value: @address.address_line_1,
+                  class: "form-control #{'is-invalid' if @address.errors[:address_line_1].any?}" %>
+              <% if @address.errors[:address_line_1].any? %>
+                <div class="invalid-feedback">
+                  <%= @address.errors[:address_line_1].first %>
+                </div>
+              <% end %>
+            </div>
+
+            <div class="mb-3">
+              <%= f.label "address[address_line_2]", "Apartment, suite, etc. (optional)", class: "form-label" %>
+              <%= f.text_field "address[address_line_2]",
+                  value: @address.address_line_2,
+                  class: "form-control" %>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <%= f.label "address[city]", "City", class: "form-label" %>
+                <%= f.text_field "address[city]",
+                    value: @address.city,
+                    class: "form-control #{'is-invalid' if @address.errors[:city].any?}" %>
+                <% if @address.errors[:city].any? %>
                   <div class="invalid-feedback">
-                    <%= @address.errors[:address_line_1].first %>
+                    <%= @address.errors[:city].first %>
                   </div>
                 <% end %>
               </div>
-
-              <div class="mb-3">
-                <%= address_form.label :address_line_2, "Apartment, suite, etc. (optional)", class: "form-label" %>
-                <%= address_form.text_field :address_line_2, class: "form-control" %>
+              <div class="col-md-3 mb-3">
+                <%= f.label "address[province_id]", "Province", class: "form-label" %>
+                <%= f.select "address[province_id]",
+                    options_from_collection_for_select(@provinces, :id, :name, @address.province_id),
+                    { prompt: "Select Province" },
+                    { class: "form-select #{'is-invalid' if @address.errors[:province_id].any?}", id: "province_select" } %>
+                <% if @address.errors[:province_id].any? %>
+                  <div class="invalid-feedback">
+                    <%= @address.errors[:province_id].first %>
+                  </div>
+                <% end %>
               </div>
-
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <%= address_form.label :city, class: "form-label" %>
-                  <%= address_form.text_field :city, class: "form-control #{'is-invalid' if @address.errors[:city].any?}" %>
-                  <% if @address.errors[:city].any? %>
-                    <div class="invalid-feedback">
-                      <%= @address.errors[:city].first %>
-                    </div>
-                  <% end %>
-                </div>
-                <div class="col-md-3 mb-3">
-                  <%= address_form.label :province_id, "Province", class: "form-label" %>
-                  <%= address_form.select :province_id,
-                      options_from_collection_for_select(@provinces, :id, :name, @address.province_id),
-                      { prompt: "Select Province" },
-                      { class: "form-select #{'is-invalid' if @address.errors[:province_id].any?}", id: "province_select" } %>
-                  <% if @address.errors[:province_id].any? %>
-                    <div class="invalid-feedback">
-                      <%= @address.errors[:province_id].first %>
-                    </div>
-                  <% end %>
-                </div>
-                <div class="col-md-3 mb-3">
-                  <%= address_form.label :postal_code, class: "form-label" %>
-                  <%= address_form.text_field :postal_code, class: "form-control #{'is-invalid' if @address.errors[:postal_code].any?}", placeholder: "A1A 1A1" %>
-                  <% if @address.errors[:postal_code].any? %>
-                    <div class="invalid-feedback">
-                      <%= @address.errors[:postal_code].first %>
-                    </div>
-                  <% end %>
-                </div>
+              <div class="col-md-3 mb-3">
+                <%= f.label "address[postal_code]", "Postal Code", class: "form-label" %>
+                <%= f.text_field "address[postal_code]",
+                    value: @address.postal_code,
+                    class: "form-control #{'is-invalid' if @address.errors[:postal_code].any?}",
+                    placeholder: "A1A 1A1" %>
+                <% if @address.errors[:postal_code].any? %>
+                  <div class="invalid-feedback">
+                    <%= @address.errors[:postal_code].first %>
+                  </div>
+                <% end %>
               </div>
-            <% end %>
+            </div>
           </div>
         </div>
 
         <div class="d-flex justify-content-between">
           <%= link_to "Back to Cart", cart_path, class: "btn btn-outline-secondary" %>
-          <%= f.submit "Place Order", class: "btn btn-success btn-lg" %>
+          <%= f.submit "Continue to Review", class: "btn btn-success btn-lg" %>
         </div>
       <% end %>
     </div>
@@ -152,14 +166,11 @@
               <span><%= number_to_currency(item.total_price) %></span>
             </div>
           <% end %>
-
           <hr>
-
           <div class="d-flex justify-content-between mb-2">
             <span>Subtotal:</span>
             <span id="order-subtotal"><%= number_to_currency(@subtotal) %></span>
           </div>
-
           <div class="d-flex justify-content-between mb-2" id="tax-breakdown" style="display: none;">
             <div class="w-100">
               <div class="d-flex justify-content-between" id="gst-row">
@@ -176,14 +187,11 @@
               </div>
             </div>
           </div>
-
           <div class="d-flex justify-content-between mb-2">
             <span>Shipping:</span>
             <span>Free</span>
           </div>
-
           <hr>
-
           <div class="d-flex justify-content-between h5">
             <strong>Total:</strong>
             <strong id="order-total"><%= number_to_currency(@subtotal) %></strong>
@@ -217,7 +225,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (selectedProvinceId && taxRates[selectedProvinceId]) {
       const rates = taxRates[selectedProvinceId];
-
       const gstAmount = subtotal * rates.gst;
       const pstAmount = subtotal * rates.pst;
       const hstAmount = subtotal * rates.hst;
@@ -238,10 +245,10 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('hst-row').style.display = rates.hst > 0 ? 'flex' : 'none';
 
       // Update total
-      orderTotal.textContent = ' + total.toFixed(2);
+      orderTotal.textContent = '$' + total.toFixed(2);
     } else {
       taxBreakdown.style.display = 'none';
-      orderTotal.textContent = ' + subtotal.toFixed(2);
+      orderTotal.textContent = '$' + subtotal.toFixed(2);
     }
   }
 

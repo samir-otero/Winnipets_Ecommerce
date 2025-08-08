@@ -108,7 +108,6 @@
 
             <!-- Tax Breakdown -->
             <h5>Taxes (<%= @province.name %>):</h5>
-
             <% if @province.gst_rate > 0 %>
               <div class="d-flex justify-content-between mb-1">
                 <small>GST (<%= number_to_percentage(@province.gst_rate * 100, precision: 2) %>):</small>
@@ -145,10 +144,10 @@
 
             <!-- Action Buttons -->
             <div class="d-grid gap-2">
-              <%= form_with url: process_order_checkout_path, method: :post, local: true do |form| %>
-                <%= form.submit "Confirm Order", class: "btn btn-primary btn-lg" %>
+              <%= form_with url: process_order_checkout_path, method: :post, local: true, id: "confirm-order-form" do |form| %>
+                <%= form.submit "Place Order", class: "btn btn-primary btn-lg", id: "place-order-btn",
+                                data: { disable_with: "Processing Order..." } %>
               <% end %>
-
               <%= link_to "Edit Cart", cart_path, class: "btn btn-outline-secondary" %>
               <%= link_to "Back to Checkout", new_checkout_path, class: "btn btn-outline-secondary" %>
             </div>
@@ -158,6 +157,29 @@
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('confirm-order-form');
+  const submitButton = document.getElementById('place-order-btn');
+
+  if (form && submitButton) {
+    form.addEventListener('submit', function(e) {
+      // Disable the button to prevent double-clicks
+      submitButton.disabled = true;
+      submitButton.textContent = 'Processing Order...';
+
+      // Re-enable after 10 seconds as a failsafe
+      setTimeout(function() {
+        if (submitButton.disabled) {
+          submitButton.disabled = false;
+          submitButton.textContent = 'Place Order';
+        }
+      }, 10000);
+    });
+  }
+});
+</script>
 
 <style>
 .checkout-confirmation {

@@ -57,23 +57,13 @@ class CheckoutController < ApplicationController
     @pst_amount = current_cart.pst_amount(@province)
     @hst_amount = current_cart.hst_amount(@province)
     @tax_amount = @gst_amount + @pst_amount + @hst_amount
-    @total_amount = @subtotal + @tax_amount
-    @shipping_cost = 0 # You can add shipping logic later
+    @shipping_cost = calculate_shipping_cost(@province, @subtotal) # Fixed shipping calculation
+    @total_amount = @subtotal + @tax_amount + @shipping_cost
 
     # Create temporary objects for display
     @guest_user = GuestUser.new(@user_data)
     @address = Address.new(@address_data)
     @address.province = @province
-  end
-
-  def validate_stock_availability
-    current_cart.cart_items.each do |cart_item|
-      product = cart_item.product
-      if product.stock_quantity < cart_item.quantity
-        flash[:alert] = "#{product.name} has insufficient stock. Only #{product.stock_quantity} available."
-        redirect_to cart_path and return
-      end
-    end
   end
 
   def process_order
@@ -89,14 +79,18 @@ class CheckoutController < ApplicationController
     province = Province.find(address_data['province_id'])
 
     # Validate stock availability before creating the order
-    validate_stock_availability
-    return if performed? # Stop further processing if redirect occurred
+    unless validate_stock_availability
+      return # Stop processing if validation failed
+    end
 
     begin
       # Create the order using the original logic
       @order = create_order_from_session(user_data, address_data, province)
 
-      if @order.persisted?
+      if @order && @order.persisted?
+        # Update product stock quantities
+        update_product_stock(@order)
+
         # Clear the checkout session data
         session.delete(:checkout_user)
         session.delete(:checkout_address)
@@ -107,10 +101,14 @@ class CheckoutController < ApplicationController
 
         redirect_to order_confirmation_path(@order), notice: "Order placed successfully!"
       else
-        flash[:alert] = "There was an error processing your order. Please try again."
+        error_messages = @order&.errors&.full_messages&.join(', ') || "Unknown error"
+        flash[:alert] = "There was an error processing your order: #{error_messages}"
         redirect_to checkout_confirmation_path
       end
+
     rescue => e
+      Rails.logger.error "Order processing error: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
       flash[:alert] = "There was an error processing your order: #{e.message}"
       redirect_to checkout_confirmation_path
     end
@@ -141,32 +139,96 @@ class CheckoutController < ApplicationController
     params.require(:address).permit(:address_line_1, :address_line_2, :city, :postal_code, :province_id)
   end
 
+  def validate_stock_availability
+    current_cart.cart_items.each do |cart_item|
+      product = cart_item.product
+      if product.stock_quantity < cart_item.quantity
+        flash[:alert] = "#{product.name} has insufficient stock. Only #{product.stock_quantity} available."
+        redirect_to cart_path
+        return false
+      end
+    end
+    true
+  end
+
+  def calculate_shipping_cost(province, subtotal)
+    # Add your shipping logic here
+    # For now, returning 0 for free shipping
+    # You might want to add logic like:
+    # return 0 if subtotal > 100  # Free shipping over $100
+    # return province.shipping_rate || 10  # Default shipping rate
+    0
+  end
+
+  def update_product_stock(order)
+    order.order_items.each do |order_item|
+      product = order_item.product
+      new_stock = product.stock_quantity - order_item.quantity
+      product.update!(stock_quantity: [new_stock, 0].max) # Ensure stock doesn't go negative
+    end
+  end
+
   def create_order_from_session(user_data, address_data, province)
-    # Create a temporary user for guest checkout
-    # Check if user already exists
+    ActiveRecord::Base.transaction do
+      # Create or find user
+      user = find_or_create_user(user_data, province)
+
+      # Create address
+      address = create_address(user, address_data, province)
+
+      # Calculate totals
+      subtotal = current_cart.subtotal
+      tax_amount = current_cart.tax_amount(province)
+      shipping_cost = calculate_shipping_cost(province, subtotal)
+      total_amount = subtotal + tax_amount + shipping_cost
+
+      # Create order
+      order = user.orders.create!(
+        subtotal: subtotal,
+        tax_amount: tax_amount,
+        shipping_cost: shipping_cost,
+        total_amount: total_amount,
+        status: 'pending',
+        shipping_address: address,
+        billing_address: address,
+        gst_rate: province.gst_rate,
+        pst_rate: province.pst_rate,
+        hst_rate: province.hst_rate
+      )
+
+      # Create order items
+      create_order_items(order)
+
+      order
+    end
+  end
+
+  def find_or_create_user(user_data, province)
     existing_user = User.find_by(email: user_data['email'])
+
     if existing_user
-      user = existing_user
-      # Update user info if needed
-      user.update!(
+      # Update existing user info if needed
+      existing_user.update!(
         first_name: user_data['first_name'],
         last_name: user_data['last_name'],
         phone: user_data['phone']
       )
+      existing_user
     else
-      user = User.create!(
+      User.create!(
         first_name: user_data['first_name'],
         last_name: user_data['last_name'],
         email: user_data['email'],
         phone: user_data['phone'],
         province: province,
         password: SecureRandom.hex(10),
-        user_type: 'guest' # Add this field to distinguish guest users
+        user_type: 'guest'
       )
     end
+  end
 
-    # Create address
-    address = user.addresses.create!(
+  def create_address(user, address_data, province)
+    user.addresses.create!(
       address_line_1: address_data['address_line_1'],
       address_line_2: address_data['address_line_2'],
       city: address_data['city'],
@@ -174,27 +236,9 @@ class CheckoutController < ApplicationController
       province: province,
       address_type: 'both'
     )
+  end
 
-    # Calculate totals
-    subtotal = current_cart.subtotal
-    tax_amount = current_cart.tax_amount(province)
-    total_amount = subtotal + tax_amount
-
-    # Create order
-    order = user.orders.create!(
-      subtotal: subtotal,
-      tax_amount: tax_amount,
-      shipping_cost: 0, # You can add shipping logic later
-      total_amount: total_amount,
-      status: 'pending',
-      shipping_address: address,
-      billing_address: address,
-      gst_rate: province.gst_rate,
-      pst_rate: province.pst_rate,
-      hst_rate: province.hst_rate
-    )
-
-    # Create order items
+  def create_order_items(order)
     current_cart.cart_items.each do |cart_item|
       order.order_items.create!(
         product: cart_item.product,
@@ -205,7 +249,5 @@ class CheckoutController < ApplicationController
         product_sku: cart_item.sku
       )
     end
-
-    order
   end
 end

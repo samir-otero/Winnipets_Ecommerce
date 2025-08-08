@@ -13,8 +13,8 @@ class ProductsController < ApplicationController
 
     # Search functionality
     if params[:search].present?
-      @products = @products.where("name ILIKE ? OR description ILIKE ?",
-                                 "%#{params[:search]}%", "%#{params[:search]}%")
+      search_term = "%#{params[:search]}%"
+      @products = @products.where("LOWER(name) LIKE LOWER(?) OR LOWER(description) LIKE LOWER(?)", search_term, search_term)
     end
 
     # Filter options for feature 2.4 (filters)
