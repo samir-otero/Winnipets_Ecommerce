@@ -3,6 +3,14 @@
   <div class="btn-toolbar mb-2 mb-md-0">
     <div class="btn-group me-2">
       <%= link_to "View Store", root_path, class: "btn btn-sm btn-outline-secondary", target: "_blank" %>
+      <%= link_to admin_logout_path, method: :delete,
+          class: "btn btn-sm btn-outline-danger",
+          data: {
+            confirm: "Are you sure you want to logout?",
+            turbo_method: :delete
+          } do %>
+        <i class="bi bi-box-arrow-right"></i> Logout
+      <% end %>
     </div>
   </div>
 </div>
