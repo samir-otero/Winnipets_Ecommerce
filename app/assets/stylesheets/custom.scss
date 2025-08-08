@@ -150,17 +150,39 @@ h6 { font-size: 1rem; font-weight: 500; }
 
   &:hover, &:focus {
     background-color: rgba(255, 255, 255, 0.1);
+    color: var(--winnipets-light-cream) !important;
     transform: translateY(-1px);
   }
 
   &.active {
     background-color: rgba(255, 255, 255, 0.2);
+    color: var(--winnipets-light-cream) !important;
+  }
+}
+
+// Dropdown menu styling for better contrast
+.dropdown-menu {
+  background-color: white;
+  border: 1px solid var(--winnipets-primary);
+
+  .dropdown-item {
+    color: var(--winnipets-primary-dark) !important;
+
+    &:hover, &:focus {
+      background-color: var(--winnipets-cream);
+      color: var(--winnipets-primary-dark) !important;
+    }
+  }
+
+  .dropdown-divider {
+    border-color: var(--winnipets-primary);
   }
 }
 
 // Cart Badge
 .cart-count {
   background-color: #ff69b4 !important;
+  color: var(--winnipets-primary-dark) !important;
   animation: pulse 2s infinite;
 }
 
@@ -340,22 +362,32 @@ h6 { font-size: 1rem; font-weight: 500; }
   }
 }
 
-// Footer Styling
+// Footer Styling - FIXED FOR BETTER CONTRAST
 footer {
   background: linear-gradient(135deg, var(--winnipets-primary-dark) 0%, var(--winnipets-primary) 100%) !important;
-  color: white;
+  color: var(--winnipets-light-cream) !important;
 
   h5, h6 {
-    color: var(--winnipets-light-cream);
+    color: var(--winnipets-light-cream) !important;
   }
 
   a {
-    color: rgba(245, 245, 220, 0.8);
-    transition: color 0.3s ease;
+    color: var(--winnipets-light-cream) !important;
+    opacity: 0.8;
+    transition: all 0.3s ease;
 
     &:hover {
-      color: var(--winnipets-light-cream);
+      color: var(--winnipets-light-cream) !important;
+      opacity: 1;
       text-decoration: none;
+    }
+  }
+
+  .text-light {
+    color: var(--winnipets-light-cream) !important;
+
+    &.opacity-75 {
+      opacity: 0.75;
     }
   }
 }
@@ -476,17 +508,33 @@ footer {
   transform: translateY(-50%);
 }
 
-// Search Form Styling
+// Search Form Styling - FIXED FOR BETTER CONTRAST
 .navbar .form-control {
-  background-color: rgba(255, 255, 255, 0.9);
-  border: none;
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid var(--winnipets-primary);
+  color: var(--winnipets-text-dark);
 
   &:focus {
     background-color: white;
-    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.3);
+    color: var(--winnipets-text-dark);
+    border-color: var(--winnipets-primary-light);
+    box-shadow: 0 0 0 0.2rem rgba(139, 69, 19, 0.2);
   }
 
   &::placeholder {
     color: var(--winnipets-warm-gray);
+    opacity: 0.8;
+  }
+}
+
+// Additional fixes for button contrast in navbar
+.navbar .btn-outline-light {
+  color: var(--winnipets-light-cream);
+  border-color: var(--winnipets-light-cream);
+
+  &:hover, &:focus {
+    background-color: var(--winnipets-light-cream);
+    color: var(--winnipets-primary-dark);
+    border-color: var(--winnipets-light-cream);
   }
 }

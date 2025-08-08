@@ -7,33 +7,6 @@
           <h1 class="display-6 fw-bold text-winnipets-primary">
             <i class="bi bi-credit-card me-3"></i>Secure Checkout
           </h1>
-          <p class="lead text-muted">Complete your order safely and securely</p>
-        </div>
-
-        <!-- Progress Indicator -->
-        <div class="checkout-progress mb-4">
-          <div class="d-flex justify-content-between align-items-center">
-            <div class="progress-step active">
-              <div class="step-circle">
-                <i class="bi bi-cart3"></i>
-              </div>
-              <span class="step-label">Cart</span>
-            </div>
-            <div class="progress-line"></div>
-            <div class="progress-step active">
-              <div class="step-circle">
-                <i class="bi bi-person"></i>
-              </div>
-              <span class="step-label">Information</span>
-            </div>
-            <div class="progress-line"></div>
-            <div class="progress-step">
-              <div class="step-circle">
-                <i class="bi bi-check2"></i>
-              </div>
-              <span class="step-label">Confirmation</span>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -51,21 +24,7 @@
               </h4>
             </div>
             <div class="card-body">
-              <% if @media (max-width: 576px) {
-  .display-6 {
-    font-size: 1.75rem;
-  }
-
-  .card-body {
-    padding: 1rem;
-  }
-
-  .btn-lg {
-    padding: 0.75rem 1.25rem;
-    font-size: 1rem;
-  }
-}
-</style>guest_user.errors.any? %>
+              <% if @guest_user.errors.any? %>
                 <div class="alert alert-danger border-0">
                   <h6 class="fw-bold">
                     <i class="bi bi-exclamation-triangle me-2"></i>
@@ -229,7 +188,7 @@
                         value: @address.postal_code,
                         class: "form-control #{'is-invalid' if @address.errors[:postal_code].any?}",
                         placeholder: "A1A 1A1",
-                        pattern: "[A-Za-z]\d[A-Za-z] \d[A-Za-z]\d" %>
+                        pattern: "[A-Za-z]\\d[A-Za-z] \\d[A-Za-z]\\d" %>
                     <%= f.label "address[postal_code]", "Postal Code", class: "form-label" %>
                     <% if @address.errors[:postal_code].any? %>
                       <div class="invalid-feedback">
@@ -564,4 +523,16 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 }
 
-@
+@media (max-width: 576px) {
+    .display-6 {
+      font-size: 1.75rem;
+    }
+    .card-body {
+      padding: 1rem;
+    }
+    .btn-lg {
+      padding: 0.75rem 1.25rem;
+      font-size: 1rem;
+    }
+  }
+</style>

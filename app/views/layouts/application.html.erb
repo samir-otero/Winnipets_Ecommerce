@@ -26,7 +26,7 @@
 
   <body class="bg-winnipets-light">
     <!-- Navigation Header -->
-    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%) !important;">
       <div class="container">
         <%= link_to root_path, class: "navbar-brand fw-bold" do %>
           <i class="bi bi-heart-fill me-2"></i>Winnipets
@@ -130,7 +130,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="text-light py-5 mt-5">
+    <footer class="py-5 mt-5" style="background: linear-gradient(135deg, #654321 0%, #8B4513 100%) !important; color: #FEFEF8;">
       <div class="container">
         <div class="row">
           <div class="col-lg-4 col-md-6 mb-4">
@@ -248,3 +248,9 @@
     </script>
   </body>
 </html>
+
+<style>
+        .navbar .nav-link.position-relative.d-flex.align-items-center i.bi-cart3 {
+        color: #FEFEF8 !important;
+        }
+      </style>
