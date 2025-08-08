@@ -2,52 +2,137 @@
 
 <section class="py-5" id="products">
   <div class="container">
+
+    <!-- Page Header with Search Results Info -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <h1 class="h2 mb-3">
+          <% if @selected_category %>
+            <%= @selected_category.name %>
+          <% elsif params[:search].present? %>
+            Search Results
+          <% else %>
+            All Products
+          <% end %>
+        </h1>
+
+        <% if params[:search].present? %>
+          <div class="alert alert-info">
+            <i class="bi bi-search"></i>
+            Showing results for "<strong><%= params[:search] %></strong>"
+            <%= link_to "Clear search", products_path(category_id: params[:category_id]), class: "btn btn-sm btn-outline-info ms-2" %>
+          </div>
+        <% end %>
+
+        <% if @selected_category&.description.present? %>
+          <p class="text-muted"><%= @selected_category.description %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Filters and Sort Options -->
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <!-- Category Filter Dropdown -->
+        <%= form_with url: products_path, method: :get, local: true, class: "d-flex align-items-center" do |form| %>
+          <%= form.hidden_field :search, value: params[:search] %>
+          <%= form.hidden_field :filter, value: params[:filter] %>
+          <label class="form-label me-2 mb-0">Category:</label>
+          <%= form.select :category_id,
+                         options_from_collection_for_select(@categories, :id, :name, params[:category_id]),
+                         { prompt: "All Categories" },
+                         { class: "form-select", onchange: "this.form.submit();", style: "width: auto;" } %>
+        <% end %>
+      </div>
+
+      <div class="col-md-6 text-md-end mt-2 mt-md-0">
+        <!-- Filter Options -->
+        <div class="btn-group" role="group" aria-label="Product filters">
+          <%= link_to "All", products_path(search: params[:search], category_id: params[:category_id]),
+              class: "btn btn-sm #{'btn-primary' if params[:filter].blank?} #{'btn-outline-primary' unless params[:filter].blank?}" %>
+          <%= link_to "On Sale", products_path(search: params[:search], category_id: params[:category_id], filter: 'on_sale'),
+              class: "btn btn-sm #{'btn-primary' if params[:filter] == 'on_sale'} #{'btn-outline-primary' unless params[:filter] == 'on_sale'}" %>
+          <%= link_to "New", products_path(search: params[:search], category_id: params[:category_id], filter: 'new'),
+              class: "btn btn-sm #{'btn-primary' if params[:filter] == 'new'} #{'btn-outline-primary' unless params[:filter] == 'new'}" %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Products Grid -->
     <% if @products.any? %>
       <div class="row">
         <% @products.each do |product| %>
-          <div class="col-md-4 mb-4">
-            <div class="card h-100">
+          <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+            <div class="card h-100 shadow-sm">
+
+              <!-- Product Image -->
               <% if product.images.attached? %>
-                <%= link_to product_path(product) do %>
-                  <%= image_tag product.images.first, class: "card-img-top", style: "height: 250px; object-fit: cover;" %>
+                <%= link_to product_path(product), class: "text-decoration-none" do %>
+                  <%= image_tag product.images.first,
+                      class: "card-img-top",
+                      style: "height: 200px; object-fit: cover;",
+                      alt: product.name %>
                 <% end %>
               <% else %>
-                <div class="card-img-top placeholder-image" style="height: 250px; background-color: #f8f9fa;"></div>
+                <div class="card-img-top d-flex align-items-center justify-content-center bg-light"
+                     style="height: 200px;">
+                  <i class="bi bi-image display-4 text-muted"></i>
+                </div>
+              <% end %>
+
+              <!-- Sale Badge -->
+              <% if product.respond_to?(:on_sale?) && product.on_sale? %>
+                <div class="position-absolute top-0 end-0 m-2">
+                  <span class="badge bg-danger">Sale</span>
+                </div>
               <% end %>
 
               <div class="card-body d-flex flex-column">
+                <!-- Product Name -->
                 <h5 class="card-title">
-                  <%= link_to product.name, product_path(product), class: "text-decoration-none" %>
+                  <%= link_to product.name, product_path(product), class: "text-decoration-none text-dark" %>
                 </h5>
 
-                <p class="card-text text-muted small"><%= product.category.name %></p>
+                <!-- Category -->
+                <p class="card-text text-muted small mb-2">
+                  <i class="bi bi-tag"></i> <%= product.category.name %>
+                </p>
 
+                <!-- Price -->
                 <div class="mb-2">
-                  <% if product.on_sale? %>
-                    <span class="h5 text-danger"><%= number_to_currency(product.sale_price) %></span>
+                  <% if product.respond_to?(:on_sale?) && product.on_sale? %>
+                    <span class="h5 text-danger fw-bold"><%= number_to_currency(product.sale_price) %></span>
                     <span class="text-muted text-decoration-line-through ms-1"><%= number_to_currency(product.price) %></span>
-                    <span class="badge bg-danger ms-1">Sale</span>
                   <% else %>
-                    <span class="h5"><%= number_to_currency(product.price) %></span>
+                    <span class="h5 fw-bold"><%= number_to_currency(product.price) %></span>
                   <% end %>
                 </div>
 
-                <p class="card-text flex-grow-1"><%= truncate(product.description, length: 100) %></p>
+                <!-- Description -->
+                <p class="card-text flex-grow-1 small"><%= truncate(product.description, length: 100) %></p>
 
+                <!-- Stock Status and Actions -->
                 <div class="mt-auto">
                   <% if product.stock_quantity > 0 %>
                     <div class="d-flex justify-content-between align-items-center mb-2">
                       <small class="text-success">
-                        <i class="fas fa-check-circle"></i> In Stock
+                        <i class="bi bi-check-circle"></i> In Stock (<%= product.stock_quantity %>)
                       </small>
                       <%= link_to "View Details", product_path(product), class: "btn btn-sm btn-outline-info" %>
                     </div>
-                    <%= render 'shared/add_to_cart_simple', product: product %>
+
+                    <!-- Add to Cart Form -->
+                    <%= form_with url: add_item_cart_path(product), method: :post, local: true, class: "d-grid" do |form| %>
+                      <%= form.hidden_field :quantity, value: 1 %>
+                      <%= form.submit "Add to Cart", class: "btn btn-primary btn-sm" %>
+                    <% end %>
                   <% else %>
-                    <p class="text-danger mb-2">
-                      <i class="fas fa-times-circle"></i> Out of Stock
+                    <p class="text-danger mb-2 small">
+                      <i class="bi bi-x-circle"></i> Out of Stock
                     </p>
-                    <button class="btn btn-sm btn-outline-secondary w-100" disabled>Out of Stock</button>
+                    <div class="d-grid">
+                      <button class="btn btn-outline-secondary btn-sm" disabled>Out of Stock</button>
+                    </div>
                   <% end %>
                 </div>
               </div>
@@ -55,15 +140,30 @@
           </div>
         <% end %>
       </div>
+
+      <!-- Pagination -->
+      <%= render 'shared/pagination', paginated_collection: @products, model_name: 'product' %>
+
     <% else %>
+      <!-- No Products Found -->
       <div class="text-center py-5">
         <i class="bi bi-search display-1 text-muted"></i>
         <h3 class="mt-3">No Products Found</h3>
         <p class="text-muted">
-          No matching products found.
+          <% if params[:search].present? || params[:category_id].present? || params[:filter].present? %>
+            No products match your current filters. Try adjusting your search criteria.
+          <% else %>
+            We're working on adding products to our catalog.
+          <% end %>
         </p>
-        <%= link_to "Browse All Products", products_path, class: "btn btn-primary" %>
+        <div class="mt-4">
+          <%= link_to "Browse All Products", products_path, class: "btn btn-primary" %>
+          <% if params[:search].present? || params[:category_id].present? || params[:filter].present? %>
+            <%= link_to "Clear Filters", products_path, class: "btn btn-outline-secondary ms-2" %>
+          <% end %>
+        </div>
       </div>
     <% end %>
+
   </div>
 </section>

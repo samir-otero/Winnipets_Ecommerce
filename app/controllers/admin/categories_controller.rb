@@ -2,12 +2,22 @@ class Admin::CategoriesController < Admin::ApplicationController
   before_action :set_category, only: [:show, :edit, :update, :destroy]
 
   def index
-    @categories = Category.all.order(:name)
-    @categories = @categories.where("name ILIKE ?", "%#{params[:search]}%") if params[:search].present?
+    @categories = Category.includes(:products).order(:name)
+
+    # Apply search filter
+    if params[:search].present?
+      @categories = @categories.where("name ILIKE ?", "%#{params[:search]}%")
+    end
+
+    # Add pagination - 10 categories per page
+    @categories = @categories.page(params[:page]).per(10)
   end
 
   def show
-    @products = @category.products.includes(:category).order(:name)
+    @products = @category.products.includes(:category, images_attachments: :blob).order(:name)
+
+    # Add pagination for products within category - 12 per page
+    @products = @products.page(params[:page]).per(12)
   end
 
   def new

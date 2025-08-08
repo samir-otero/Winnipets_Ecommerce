@@ -2,10 +2,27 @@ class Admin::ProductsController < Admin::ApplicationController
   before_action :set_product, only: [:show, :edit, :update, :destroy, :remove_image]
 
   def index
-    @products = Product.includes(:category).order(:name)
-    @products = @products.where("name ILIKE ?", "%#{params[:search]}%") if params[:search].present?
-    @products = @products.where(category_id: params[:category_id]) if params[:category_id].present?
+    @products = Product.includes(:category, images_attachments: :blob).order(:name)
+
+    # Apply search filter
+    if params[:search].present?
+      @products = @products.where("name ILIKE ?", "%#{params[:search]}%")
+    end
+
+    # Apply category filter
+    if params[:category_id].present?
+      @products = @products.where(category_id: params[:category_id])
+    end
+
+    # Add pagination - 15 products per page for admin
+    @products = @products.page(params[:page]).per(15)
+
     @categories = Category.all
+
+    # Store counts for stats (before pagination)
+    @total_products = Product.count
+    @active_products = Product.where(is_active: true).count
+    @out_of_stock_products = Product.where(stock_quantity: 0).count
   end
 
   def show

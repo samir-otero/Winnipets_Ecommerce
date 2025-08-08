@@ -27,7 +27,8 @@ class ProductsController < ApplicationController
       @products = @products.where('updated_at > ?', 7.days.ago)
     end
 
-    @products = @products.order(:name)
+    # Add pagination - 12 products per page for customer view
+    @products = @products.order(:name).page(params[:page]).per(12)
   end
 
   def show
