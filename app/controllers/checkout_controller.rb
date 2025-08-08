@@ -1,5 +1,5 @@
 class CheckoutController < ApplicationController
-  before_action :check_cart_not_empty
+  before_action :check_cart_not_empty, except: [:order_confirmation]
   before_action :set_provinces, only: [:new, :create, :confirmation]
 
   def new
@@ -115,8 +115,18 @@ class CheckoutController < ApplicationController
   end
 
   def order_confirmation
-    @order = Order.find_by(id: params[:id])
-    redirect_to root_path, alert: "Order not found." unless @order
+    @order = Order.includes(:user, :order_items, :shipping_address, :billing_address,
+                            order_items: [:product],
+                            shipping_address: [:province]).find_by(id: params[:id])
+
+    unless @order
+      redirect_to root_path, alert: "Order not found."
+      return
+    end
+
+    # Add some security check here
+    # For example, only allow access if the order was just created or if user is logged in
+    # This prevents people from guessing order IDs and viewing other people's orders
   end
 
   private
