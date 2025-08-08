@@ -1,119 +1,386 @@
 <% content_for :title, "#{@product.name} - Winnipets" %>
 
-<div class="container mt-4">
-  <div class="row">
-    <div class="col-md-6">
-      <% if @product.images.attached? %>
-        <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
-          <div class="carousel-inner">
-            <% @product.images.each_with_index do |image, index| %>
-              <div class="carousel-item <%= 'active' if index == 0 %>">
-                <%= image_tag image, class: "d-block w-100", style: "height: 400px; object-fit: cover;" %>
+<div class="product-detail-page bg-winnipets-light py-5">
+  <div class="container">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <%= link_to "Home", root_path, class: "text-decoration-none text-winnipets-primary" %>
+        </li>
+        <li class="breadcrumb-item">
+          <%= link_to "Products", products_path, class: "text-decoration-none text-winnipets-primary" %>
+        </li>
+        <li class="breadcrumb-item">
+          <%= link_to @product.category.name, products_path(category_id: @product.category.id),
+                     class: "text-decoration-none text-winnipets-primary" %>
+        </li>
+        <li class="breadcrumb-item active text-muted" aria-current="page">
+          <%= truncate(@product.name, length: 50) %>
+        </li>
+      </ol>
+    </nav>
+
+    <div class="row g-4">
+      <!-- Product Images -->
+      <div class="col-lg-6">
+        <div class="product-images">
+          <% if @product.images.attached? %>
+            <div id="productCarousel" class="carousel slide mb-3" data-bs-ride="false">
+              <div class="carousel-inner">
+                <% @product.images.each_with_index do |image, index| %>
+                  <div class="carousel-item <%= 'active' if index == 0 %>">
+                    <%= image_tag image,
+                                 class: "d-block w-100 img-fluid rounded-3 shadow-winnipets",
+                                 style: "height: 500px; object-fit: cover;" %>
+                  </div>
+                <% end %>
+              </div>
+
+              <% if @product.images.count > 1 %>
+                <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+              <% end %>
+            </div>
+
+            <!-- Thumbnail Navigation -->
+            <% if @product.images.count > 1 %>
+              <div class="d-flex gap-2 flex-wrap justify-content-center">
+                <% @product.images.each_with_index do |image, index| %>
+                  <button class="btn p-0 border-0 thumbnail-btn <%= 'active' if index == 0 %>"
+                          data-bs-target="#productCarousel"
+                          data-bs-slide-to="<%= index %>">
+                    <%= image_tag image,
+                                 class: "img-thumbnail",
+                                 style: "width: 80px; height: 80px; object-fit: cover;" %>
+                  </button>
+                <% end %>
               </div>
             <% end %>
-          </div>
-          <% if @product.images.count > 1 %>
-            <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
-              <span class="carousel-control-prev-icon"></span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
-              <span class="carousel-control-next-icon"></span>
-            </button>
-          <% end %>
-        </div>
-      <% else %>
-        <div class="placeholder-image" style="height: 400px; background-color: #f8f9fa; border: 1px solid #dee2e6; display: flex; align-items: center; justify-content: center;">
-          <span class="text-muted">No image available</span>
-        </div>
-      <% end %>
-    </div>
-
-    <div class="col-md-6">
-      <h1><%= @product.name %></h1>
-
-      <div class="mb-3">
-        <% if @product.on_sale? %>
-          <span class="h3 text-danger"><%= number_to_currency(@product.sale_price) %></span>
-          <span class="h5 text-muted text-decoration-line-through ms-2"><%= number_to_currency(@product.price) %></span>
-          <span class="badge bg-danger ms-2">On Sale!</span>
-        <% else %>
-          <span class="h3"><%= number_to_currency(@product.price) %></span>
-        <% end %>
-      </div>
-
-      <p class="text-muted mb-2">SKU: <%= @product.sku %></p>
-      <p class="text-muted mb-2">Category: <%= @product.category.name %></p>
-
-      <% if @product.stock_quantity > 0 %>
-        <p class="text-success mb-3">
-          <i class="fas fa-check-circle"></i>
-          <%= @product.stock_quantity %> in stock
-        </p>
-
-        <div class="mb-4">
-          <%= render 'shared/add_to_cart_button', product: @product %>
-        </div>
-      <% else %>
-        <p class="text-danger mb-3">
-          <i class="fas fa-times-circle"></i>
-          Out of Stock
-        </p>
-      <% end %>
-
-      <div class="mb-4">
-        <h5>Description</h5>
-        <p><%= simple_format(@product.description) %></p>
-      </div>
-
-      <% if @product.weight.present? %>
-        <p class="text-muted">Weight: <%= @product.weight %> kg</p>
-      <% end %>
-    </div>
-  </div>
-
-  <% if @related_products.any? %>
-    <div class="row mt-5">
-      <div class="col-12">
-        <h3>Related Products</h3>
-        <div class="row">
-          <% @related_products.each do |product| %>
-            <div class="col-md-3 mb-4">
-              <div class="card h-100">
-                <% if product.images.attached? %>
-                  <%= link_to product_path(product) do %>
-                    <%= image_tag product.images.first, class: "card-img-top", style: "height: 200px; object-fit: cover;" %>
-                  <% end %>
-                <% else %>
-                  <div class="card-img-top placeholder-image" style="height: 200px; background-color: #f8f9fa; border-bottom: 1px solid #dee2e6;"></div>
-                <% end %>
-
-                <div class="card-body d-flex flex-column">
-                  <h6 class="card-title">
-                    <%= link_to product.name, product_path(product), class: "text-decoration-none" %>
-                  </h6>
-
-                  <div class="mb-2">
-                    <% if product.on_sale? %>
-                      <span class="text-danger fw-bold"><%= number_to_currency(product.sale_price) %></span>
-                      <span class="text-muted text-decoration-line-through ms-1"><%= number_to_currency(product.price) %></span>
-                    <% else %>
-                      <span class="fw-bold"><%= number_to_currency(product.price) %></span>
-                    <% end %>
-                  </div>
-
-                  <div class="mt-auto">
-                    <% if product.stock_quantity > 0 %>
-                      <%= render 'shared/add_to_cart_simple', product: product %>
-                    <% else %>
-                      <button class="btn btn-sm btn-outline-secondary w-100" disabled>Out of Stock</button>
-                    <% end %>
-                  </div>
-                </div>
+          <% else %>
+            <div class="placeholder-image rounded-3 shadow-winnipets d-flex align-items-center justify-content-center"
+                 style="height: 500px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+              <div class="text-center text-muted">
+                <i class="bi bi-image display-1 mb-3"></i>
+                <p class="lead mb-0">No image available</p>
               </div>
             </div>
           <% end %>
         </div>
       </div>
+
+      <!-- Product Information -->
+      <div class="col-lg-6">
+        <div class="product-info">
+          <!-- Category Badge -->
+          <div class="mb-3">
+            <%= link_to products_path(category_id: @product.category.id),
+                       class: "badge bg-winnipets-secondary text-decoration-none fs-6" do %>
+              <i class="bi bi-tag me-1"></i><%= @product.category.name %>
+            <% end %>
+          </div>
+
+          <!-- Product Title -->
+          <h1 class="display-5 fw-bold text-winnipets-primary mb-3"><%= @product.name %></h1>
+
+          <!-- Product Meta Info -->
+          <div class="row g-3 mb-4">
+            <div class="col-auto">
+              <small class="text-muted">
+                <i class="bi bi-upc me-1"></i>SKU: <span class="fw-semibold"><%= @product.sku %></span>
+              </small>
+            </div>
+            <% if @product.weight.present? %>
+              <div class="col-auto">
+                <small class="text-muted">
+                  <i class="bi bi-box me-1"></i>Weight: <span class="fw-semibold"><%= @product.weight %> kg</span>
+                </small>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- Pricing -->
+          <div class="pricing mb-4 p-3 bg-white rounded-3 shadow-sm">
+            <% if @product.on_sale? %>
+              <div class="d-flex align-items-center gap-3">
+                <span class="h2 text-danger fw-bold mb-0">
+                  <%= number_to_currency(@product.sale_price) %>
+                </span>
+                <span class="h4 text-muted text-decoration-line-through mb-0">
+                  <%= number_to_currency(@product.price) %>
+                </span>
+                <span class="badge bg-danger fs-6">
+                  <i class="bi bi-percent me-1"></i>On Sale!
+                </span>
+              </div>
+              <div class="mt-2">
+                <small class="text-success fw-semibold">
+                  <i class="bi bi-arrow-down me-1"></i>
+                  You save <%= number_to_currency(@product.price - @product.sale_price) %>
+                </small>
+              </div>
+            <% else %>
+              <span class="h2 text-winnipets-primary fw-bold mb-0">
+                <%= number_to_currency(@product.price) %>
+              </span>
+            <% end %>
+          </div>
+
+          <!-- Stock Status -->
+          <div class="stock-status mb-4">
+            <% if @product.stock_quantity > 0 %>
+              <div class="alert alert-success border-0 d-flex align-items-center"
+                   style="background-color: rgba(74, 124, 74, 0.1);">
+                <i class="bi bi-check-circle-fill text-success me-2 fs-5"></i>
+                <div>
+                  <strong>In Stock</strong>
+                  <div class="small">
+                    <%= @product.stock_quantity %> units available
+                    <% if @product.stock_quantity <= 5 %>
+                      <span class="text-warning ms-1">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        Only <%= @product.stock_quantity %> left - order soon!
+                      </span>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Add to Cart Section -->
+              <div class="add-to-cart-section bg-white p-4 rounded-3 shadow-winnipets">
+                <%= render 'shared/add_to_cart_button', product: @product %>
+              </div>
+            <% else %>
+              <div class="alert alert-warning border-0 d-flex align-items-center"
+                   style="background-color: rgba(212, 165, 116, 0.1);">
+                <i class="bi bi-x-circle-fill text-warning me-2 fs-5"></i>
+                <div>
+                  <strong>Out of Stock</strong>
+                  <div class="small">This item is currently unavailable</div>
+                </div>
+              </div>
+
+              <div class="text-center">
+                <button class="btn btn-outline-winnipets-primary btn-lg" disabled>
+                  <i class="bi bi-bell me-2"></i>Notify When Available
+                </button>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- Product Features -->
+          <div class="product-features mb-4">
+            <div class="row g-3 text-center">
+              <div class="col-4">
+                <div class="feature-card p-3 bg-white rounded-3 shadow-sm h-100">
+                  <i class="bi bi-truck fs-3 text-winnipets-secondary mb-2"></i>
+                  <h6 class="mb-1">Free Shipping</h6>
+                  <small class="text-muted">On orders over $50</small>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="feature-card p-3 bg-white rounded-3 shadow-sm h-100">
+                  <i class="bi bi-arrow-clockwise fs-3 text-winnipets-secondary mb-2"></i>
+                  <h6 class="mb-1">Easy Returns</h6>
+                  <small class="text-muted">30-day policy</small>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="feature-card p-3 bg-white rounded-3 shadow-sm h-100">
+                  <i class="bi bi-shield-check fs-3 text-winnipets-secondary mb-2"></i>
+                  <h6 class="mb-1">Quality Assured</h6>
+                  <small class="text-muted">Pet-safe materials</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  <% end %>
+
+    <!-- Product Description -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <div class="card shadow-winnipets border-0">
+          <div class="card-header bg-white">
+            <h3 class="mb-0 text-winnipets-primary">
+              <i class="bi bi-file-text me-2"></i>Product Description
+            </h3>
+          </div>
+          <div class="card-body">
+            <div class="description-content">
+              <%= simple_format(@product.description, class: "mb-0 lh-lg") %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Products -->
+    <% if @related_products.any? %>
+      <div class="row mt-5">
+        <div class="col-12">
+          <div class="d-flex align-items-center justify-content-between mb-4">
+            <h3 class="text-winnipets-primary mb-0">
+              <i class="bi bi-heart me-2"></i>You Might Also Like
+            </h3>
+            <%= link_to "View All", products_path(category_id: @product.category.id),
+                       class: "btn btn-outline-winnipets-primary" %>
+          </div>
+
+          <div class="row g-4">
+            <% @related_products.each do |product| %>
+              <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="card h-100 shadow-winnipets product-card">
+                  <!-- Product Image -->
+                  <div class="position-relative overflow-hidden">
+                    <% if product.images.attached? %>
+                      <%= link_to product_path(product), class: "text-decoration-none" do %>
+                        <%= image_tag product.images.first,
+                                     class: "card-img-top",
+                                     style: "height: 200px; object-fit: cover;",
+                                     loading: "lazy" %>
+                      <% end %>
+                    <% else %>
+                      <div class="card-img-top d-flex align-items-center justify-content-center bg-light"
+                           style="height: 200px;">
+                        <i class="bi bi-image text-muted fs-1"></i>
+                      </div>
+                    <% end %>
+
+                    <!-- Sale Badge -->
+                    <% if product.on_sale? %>
+                      <div class="position-absolute top-0 end-0 m-2">
+                        <span class="badge bg-danger">Sale</span>
+                      </div>
+                    <% end %>
+                  </div>
+
+                  <div class="card-body d-flex flex-column">
+                    <!-- Product Name -->
+                    <h6 class="card-title text-winnipets-primary">
+                      <%= link_to product.name, product_path(product),
+                                 class: "text-decoration-none stretched-link" %>
+                    </h6>
+
+                    <!-- Price -->
+                    <div class="mb-2">
+                      <% if product.on_sale? %>
+                        <span class="text-danger fw-bold">
+                          <%= number_to_currency(product.sale_price) %>
+                        </span>
+                        <span class="text-muted text-decoration-line-through ms-1 small">
+                          <%= number_to_currency(product.price) %>
+                        </span>
+                      <% else %>
+                        <span class="fw-bold text-winnipets-primary">
+                          <%= number_to_currency(product.price) %>
+                        </span>
+                      <% end %>
+                    </div>
+
+                    <!-- Add to Cart -->
+                    <div class="mt-auto">
+                      <% if product.stock_quantity > 0 %>
+                        <%= render 'shared/add_to_cart_simple', product: product %>
+                      <% else %>
+                        <button class="btn btn-outline-secondary btn-sm w-100" disabled>
+                          Out of Stock
+                        </button>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
 </div>
+
+<style>
+.product-detail-page {
+  min-height: 70vh;
+}
+
+.thumbnail-btn.active img {
+  border-color: var(--winnipets-primary) !important;
+  border-width: 3px !important;
+}
+
+.pricing {
+  border-left: 4px solid var(--winnipets-primary);
+}
+
+.add-to-cart-section {
+  border-left: 4px solid var(--winnipets-secondary);
+}
+
+.feature-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+.description-content {
+  font-size: 1.1rem;
+  line-height: 1.8;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  color: var(--winnipets-primary);
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  background-color: rgba(139, 69, 19, 0.8);
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.carousel-control-prev {
+  left: 15px;
+}
+
+.carousel-control-next {
+  right: 15px;
+}
+
+@media (max-width: 768px) {
+  .display-5 {
+    font-size: 2rem;
+  }
+
+  .h2 {
+    font-size: 1.5rem;
+  }
+
+  .pricing {
+    border-left: none;
+    border-top: 4px solid var(--winnipets-primary);
+  }
+
+  .add-to-cart-section {
+    border-left: none;
+    border-top: 4px solid var(--winnipets-secondary);
+  }
+
+  .feature-card {
+    margin-bottom: 1rem;
+  }
+}
+</style>

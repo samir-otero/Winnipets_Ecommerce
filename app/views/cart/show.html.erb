@@ -1,109 +1,232 @@
-<div class="cart-page">
+<div class="cart-page py-5 bg-winnipets-light">
   <div class="container">
     <div class="row">
       <div class="col-12">
-        <h1>Shopping Cart</h1>
+        <!-- Page Header -->
+        <div class="d-flex align-items-center justify-content-between mb-4">
+          <h1 class="display-6 fw-bold text-winnipets-primary mb-0">
+            <i class="bi bi-cart3 me-3"></i>Shopping Cart
+          </h1>
+          <%= link_to "Continue Shopping", products_path,
+                     class: "btn btn-outline-winnipets-primary" %>
+        </div>
 
         <% if @cart_items.empty? %>
+          <!-- Empty Cart -->
           <div class="empty-cart text-center py-5">
-            <h3>Your cart is empty</h3>
-            <p class="text-muted">Add some products to get started!</p>
-            <%= link_to "Continue Shopping", products_path, class: "btn btn-primary" %>
+            <div class="card shadow-winnipets-lg border-0" style="max-width: 500px; margin: 0 auto;">
+              <div class="card-body py-5">
+                <i class="bi bi-cart-x display-1 text-muted mb-4"></i>
+                <h3 class="text-winnipets-primary mb-3">Your cart is empty</h3>
+                <p class="text-muted mb-4">
+                  Discover our amazing selection of pet supplies designed for Manitoba's climate!
+                </p>
+                <%= link_to "Start Shopping", products_path,
+                           class: "btn btn-primary btn-lg" %>
+
+                <!-- Featured Categories for Empty Cart -->
+                <div class="mt-4">
+                  <h6 class="text-winnipets-primary mb-3">Popular Categories</h6>
+                  <div class="d-flex flex-wrap gap-2 justify-content-center">
+                    <% Category.joins(:products).where(products: { is_active: true }).distinct.limit(4).each do |category| %>
+                      <%= link_to products_path(category_id: category.id),
+                                 class: "btn btn-outline-winnipets-primary btn-sm" do %>
+                        <i class="bi bi-tag me-1"></i><%= category.name %>
+                      <% end %>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         <% else %>
           <div class="cart-content">
-            <div class="table-responsive">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>Product</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Total</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% @cart_items.each do |item| %>
-                    <tr data-product-id="<%= item.id %>" class="cart-item">
-                      <td>
-                        <div class="d-flex align-items-center">
-                          <% if item.image %>
-                            <%= image_tag item.image, class: "me-3 cart-item-image",
-                                         style: "width: 80px; height: 80px; object-fit: cover;" %>
-                          <% else %>
-                            <div class="me-3 cart-item-placeholder"
-                                 style="width: 80px; height: 80px; background-color: #f8f9fa; border: 1px solid #dee2e6; display: flex; align-items: center; justify-content: center;">
-                              <span class="text-muted">No Image</span>
-                            </div>
+            <div class="row">
+              <!-- Cart Items -->
+              <div class="col-lg-8">
+                <div class="card shadow-winnipets border-0 mb-4">
+                  <div class="card-header bg-white">
+                    <h4 class="mb-0 text-winnipets-primary">
+                      <i class="bi bi-bag-check me-2"></i>
+                      Cart Items (<%= pluralize(@cart_items.sum(&:quantity), 'item') %>)
+                    </h4>
+                  </div>
+                  <div class="card-body p-0">
+                    <div class="table-responsive">
+                      <table class="table table-hover mb-0">
+                        <thead>
+                          <tr>
+                            <th class="border-0 fw-semibold">Product</th>
+                            <th class="border-0 fw-semibold text-center">Price</th>
+                            <th class="border-0 fw-semibold text-center">Quantity</th>
+                            <th class="border-0 fw-semibold text-center">Total</th>
+                            <th class="border-0 fw-semibold text-center">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <% @cart_items.each do |item| %>
+                            <tr data-product-id="<%= item.id %>" class="cart-item">
+                              <td class="py-3">
+                                <div class="d-flex align-items-center">
+                                  <% if item.image %>
+                                    <div class="me-3 position-relative">
+                                      <%= image_tag item.image,
+                                                   class: "cart-item-image img-thumbnail",
+                                                   style: "width: 80px; height: 80px; object-fit: cover;" %>
+                                    </div>
+                                  <% else %>
+                                    <div class="me-3 cart-item-placeholder img-thumbnail d-flex align-items-center justify-content-center"
+                                         style="width: 80px; height: 80px; background-color: #f8f9fa;">
+                                      <i class="bi bi-image text-muted"></i>
+                                    </div>
+                                  <% end %>
+                                  <div>
+                                    <h6 class="mb-1 text-winnipets-primary fw-semibold">
+                                      <%= link_to item.name, product_path(item),
+                                                 class: "text-decoration-none text-winnipets-primary" %>
+                                    </h6>
+                                    <small class="text-muted">
+                                      <i class="bi bi-upc me-1"></i>SKU: <%= item.sku %>
+                                    </small>
+                                  </div>
+                                </div>
+                              </td>
+                              <td class="align-middle text-center">
+                                <span class="fw-semibold text-winnipets-primary">
+                                  <%= number_to_currency(item.unit_price) %>
+                                </span>
+                              </td>
+                              <td class="align-middle text-center">
+                                <%= form_with url: update_quantity_cart_path(item.id), method: :patch,
+                                             local: false, class: "d-flex align-items-center justify-content-center quantity-form" do |f| %>
+                                  <div class="input-group" style="width: 120px;">
+                                    <%= f.number_field :quantity, value: item.quantity, min: 1, max: 99,
+                                                       class: "form-control form-control-sm text-center quantity-input",
+                                                       data: { product_id: item.id } %>
+                                    <%= f.submit "Update",
+                                               class: "btn btn-outline-primary btn-sm update-btn",
+                                               style: "font-size: 0.75rem;" %>
+                                  </div>
+                                <% end %>
+                              </td>
+                              <td class="align-middle text-center">
+                                <span class="fw-bold text-winnipets-primary item-total" data-product-id="<%= item.id %>">
+                                  <%= number_to_currency(item.total_price) %>
+                                </span>
+                              </td>
+                              <td class="align-middle text-center">
+                                <%= link_to remove_item_cart_path(item.id),
+                                           method: :delete,
+                                           class: "btn btn-outline-danger btn-sm",
+                                           confirm: "Remove #{item.name} from cart?",
+                                           remote: true,
+                                           title: "Remove item" do %>
+                                  <i class="bi bi-trash3"></i>
+                                <% end %>
+                              </td>
+                            </tr>
                           <% end %>
-                          <div>
-                            <h5 class="mb-1"><%= item.name %></h5>
-                            <small class="text-muted">SKU: <%= item.sku %></small>
-                          </div>
-                        </div>
-                      </td>
-                      <td class="align-middle">
-                        <%= number_to_currency(item.unit_price) %>
-                      </td>
-                      <td class="align-middle">
-                        <%= form_with url: update_quantity_cart_path(item.id), method: :patch,
-                                     local: false, class: "d-flex align-items-center quantity-form" do |f| %>
-                          <%= f.number_field :quantity, value: item.quantity, min: 1, max: 99,
-                                           class: "form-control form-control-sm me-2 quantity-input",
-                                           style: "width: 80px;",
-                                           data: { product_id: item.id } %>
-                          <%= f.submit "Update", class: "btn btn-sm btn-outline-primary update-btn" %>
-                        <% end %>
-                      </td>
-                      <td class="align-middle item-total" data-product-id="<%= item.id %>">
-                        <%= number_to_currency(item.total_price) %>
-                      </td>
-                      <td class="align-middle">
-                        <%= link_to remove_item_cart_path(item.id),
-                                   method: :delete,
-                                   class: "btn btn-sm btn-outline-danger",
-                                   confirm: "Remove #{item.name} from cart?",
-                                   remote: true,
-                                   title: "Remove item" do %>
-                          <i class="bi bi-trash"></i> Remove
-                        <% end %>
-                      </td>
-                    </tr>
-                  <% end %>
-                </tbody>
-              </table>
-            </div>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
 
-            <!-- Cart Summary -->
-            <div class="row mt-4">
-              <div class="col-md-6">
-                <div class="cart-actions">
-                  <%= link_to "Continue Shopping", products_path, class: "btn btn-outline-secondary" %>
-                  <%= button_to "Clear Cart",
-             clear_cart_path,
-             method: :delete,
-             class: "btn btn-outline-warning",
-             data: { confirm: "Are you sure you want to clear your entire cart?" } %>
+                <!-- Cart Actions -->
+                <div class="card shadow-sm border-0">
+                  <div class="card-body">
+                    <div class="d-flex flex-column flex-sm-row gap-3 align-items-center">
+                      <%= link_to "Continue Shopping", products_path,
+                                 class: "btn btn-outline-winnipets-primary flex-fill" %>
+                      <%= button_to "Clear Cart",
+                                   clear_cart_path,
+                                   method: :delete,
+                                   class: "btn btn-outline-warning flex-fill",
+                                   data: { confirm: "Are you sure you want to clear your entire cart?" } %>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="col-md-6">
-                <div class="card">
+
+              <!-- Order Summary -->
+              <div class="col-lg-4">
+                <div class="card shadow-winnipets-lg border-0 sticky-top" style="top: 100px;">
+                  <div class="card-header bg-winnipets-light">
+                    <h4 class="mb-0 text-winnipets-primary">
+                      <i class="bi bi-receipt me-2"></i>Order Summary
+                    </h4>
+                  </div>
                   <div class="card-body">
-                    <h4>Cart Summary</h4>
-                    <div class="d-flex justify-content-between mb-2">
-                      <span>Items:</span>
-                      <span><%= pluralize(@cart_items.sum(&:quantity), 'item') %></span>
+                    <!-- Items Count -->
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                      <span class="text-muted">
+                        <i class="bi bi-bag me-2"></i>Items:
+                      </span>
+                      <span class="fw-semibold">
+                        <%= pluralize(@cart_items.sum(&:quantity), 'item') %>
+                      </span>
                     </div>
-                    <div class="d-flex justify-content-between mb-3">
-                      <strong>Subtotal:</strong>
-                      <strong id="cart-subtotal"><%= number_to_currency(@subtotal) %></strong>
+
+                    <!-- Subtotal -->
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                      <span class="text-muted">Subtotal:</span>
+                      <span class="fw-bold fs-5" id="cart-subtotal">
+                        <%= number_to_currency(@subtotal) %>
+                      </span>
                     </div>
-                    <p class="text-muted small mb-3">
-                      Taxes and shipping will be calculated at checkout
-                    </p>
-                    <%= link_to "Proceed to Checkout", new_checkout_path,
-                               class: "btn btn-primary btn-lg w-100" %>
+
+                    <!-- Shipping Info -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                      <span class="text-muted">
+                        <i class="bi bi-truck me-2"></i>Shipping:
+                      </span>
+                      <span class="text-success fw-semibold">
+                        <i class="bi bi-check-circle me-1"></i>FREE
+                      </span>
+                    </div>
+
+                    <!-- Tax Note -->
+                    <div class="alert alert-info border-0 mb-4" style="background-color: rgba(90, 123, 140, 0.1);">
+                      <small class="mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Taxes will be calculated at checkout based on your shipping address
+                      </small>
+                    </div>
+
+                    <!-- Checkout Button -->
+                    <%= link_to "Proceed to Checkout",
+                               new_checkout_path,
+                               class: "btn btn-primary btn-lg w-100 fw-bold mb-3",
+                               style: "padding: 1rem;" %>
+
+                    <!-- Security Badge -->
+                    <div class="text-center text-muted">
+                      <small>
+                        <i class="bi bi-shield-check me-1"></i>
+                        Secure checkout powered by SSL encryption
+                      </small>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Trust Indicators -->
+                <div class="card shadow-sm border-0 mt-3">
+                  <div class="card-body text-center py-3">
+                    <h6 class="text-winnipets-primary mb-3">Why Shop With Us?</h6>
+                    <div class="row g-3 text-center">
+                      <div class="col-4">
+                        <i class="bi bi-truck fs-4 text-winnipets-secondary"></i>
+                        <p class="small mb-0 mt-1">Free Shipping</p>
+                      </div>
+                      <div class="col-4">
+                        <i class="bi bi-arrow-clockwise fs-4 text-winnipets-secondary"></i>
+                        <p class="small mb-0 mt-1">Easy Returns</p>
+                      </div>
+                      <div class="col-4">
+                        <i class="bi bi-headset fs-4 text-winnipets-secondary"></i>
+                        <p class="small mb-0 mt-1">Local Support</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -115,43 +238,45 @@
   </div>
 </div>
 
-<!-- JavaScript for enhanced cart functionality -->
+<!-- Enhanced JavaScript for cart functionality -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   // Handle quantity form submissions via AJAX
   const quantityForms = document.querySelectorAll('.quantity-form');
-
   quantityForms.forEach(form => {
     form.addEventListener('ajax:success', function(event) {
       const response = event.detail[0];
-
       if (response.success) {
         // Update the item total
         const productId = form.querySelector('.quantity-input').dataset.productId;
         const itemTotalElement = document.querySelector(`.item-total[data-product-id="${productId}"]`);
         if (itemTotalElement && response.item_total) {
           itemTotalElement.textContent = response.item_total;
+          // Add animation
+          itemTotalElement.classList.add('text-success');
+          setTimeout(() => itemTotalElement.classList.remove('text-success'), 1000);
         }
 
         // Update cart subtotal
         const subtotalElement = document.getElementById('cart-subtotal');
         if (subtotalElement && response.subtotal) {
           subtotalElement.textContent = response.subtotal;
+          // Add animation
+          subtotalElement.classList.add('text-success');
+          setTimeout(() => subtotalElement.classList.remove('text-success'), 1000);
         }
 
         // Update cart count in navigation
         updateCartCount(response.cart_count);
-
         showNotification('Cart updated successfully', 'success');
       }
     });
 
     form.addEventListener('ajax:error', function(event) {
       const xhr = event.detail[2];
-      let message = 'Error adding item to cart. Please try again.';
+      let message = 'Error updating cart. Please try again.';
 
       if (xhr.status === 422) {
-        // Validation errors
         try {
           const response = JSON.parse(xhr.responseText);
           message = response.errors ? response.errors.join(', ') : message;
@@ -170,25 +295,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Handle remove item links
   const removeLinks = document.querySelectorAll('a[data-method="delete"][href*="cart/remove"]');
-
   removeLinks.forEach(link => {
     link.addEventListener('ajax:success', function(event) {
-      // Remove the table row
+      // Add fade out animation before removing
       const row = link.closest('tr');
       if (row) {
-        row.remove();
+        row.style.transition = 'opacity 0.3s ease';
+        row.style.opacity = '0';
+        setTimeout(() => {
+          row.remove();
+
+          // Check if cart is now empty
+          const remainingItems = document.querySelectorAll('.cart-item');
+          if (remainingItems.length === 0) {
+            location.reload(); // Reload to show empty cart message
+          }
+        }, 300);
       }
 
-      // Check if cart is now empty
-      const remainingItems = document.querySelectorAll('.cart-item');
-      if (remainingItems.length === 0) {
-        location.reload(); // Reload to show empty cart message
-      } else {
-        // Update cart count and subtotal if provided in response
-        const response = event.detail[0];
-        if (response && response.cart_count !== undefined) {
-          updateCartCount(response.cart_count);
-        }
+      // Update cart count and subtotal if provided in response
+      const response = event.detail[0];
+      if (response && response.cart_count !== undefined) {
+        updateCartCount(response.cart_count);
       }
 
       showNotification('Item removed from cart', 'success');
@@ -215,36 +343,45 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Create new notification
     const notification = document.createElement('div');
-    notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show cart-notification position-fixed`;
-    notification.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
+    notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show cart-notification position-fixed shadow-lg`;
+    notification.style.cssText = 'top: 80px; right: 20px; z-index: 1050; min-width: 350px; border: none; border-radius: 10px;';
     notification.innerHTML = `
-      ${message}
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      <div class="d-flex align-items-center">
+        <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+        ${message}
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+      </div>
     `;
 
     document.body.appendChild(notification);
 
-    // Auto-remove after 3 seconds
+    // Auto-remove after 4 seconds
     setTimeout(() => {
       if (notification.parentNode) {
-        notification.remove();
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 150);
       }
-    }, 3000);
+    }, 4000);
   }
 });
 </script>
 
 <style>
 .cart-page {
-  padding: 2rem 0;
+  min-height: 60vh;
 }
 
 .cart-item-image {
   border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+.cart-item-image:hover {
+  transform: scale(1.05);
 }
 
 .quantity-input {
-  text-align: center;
+  font-weight: 600;
 }
 
 .cart-actions {
@@ -252,13 +389,18 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .empty-cart {
-  min-height: 300px;
+  min-height: 400px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
+.item-total {
+  transition: color 0.3s ease;
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
   .table-responsive table {
     font-size: 0.9rem;
@@ -270,8 +412,39 @@ document.addEventListener('DOMContentLoaded', function() {
     height: 60px !important;
   }
 
-  .quantity-input {
-    width: 60px !important;
+  .quantity-form .input-group {
+    width: 100px !important;
+  }
+
+  .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.7rem;
+  }
+
+  .sticky-top {
+    position: relative !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .display-6 {
+    font-size: 1.5rem;
+  }
+
+  .card-body {
+    padding: 1rem;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.5rem 0.25rem;
+  }
+
+  .table th:nth-child(2),
+  .table td:nth-child(2),
+  .table th:nth-child(3),
+  .table td:nth-child(3) {
+    display: none;
   }
 }
 </style>
