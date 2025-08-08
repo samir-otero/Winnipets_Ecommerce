@@ -27,8 +27,8 @@
             designed for Manitoba's unique climate. Trusted by pet families for over 8 years.
           </p>
           <div class="d-flex flex-column flex-sm-row gap-3 mb-4">
-            <a href="#" class="btn btn-primary btn-lg px-5 py-3 fw-bold">Shop All Products</a>
-            <a href="#" class="btn btn-secondary btn-lg px-5 py-3 fw-bold">Winter Collection</a>
+            <a href="/products" class="btn btn-primary btn-lg px-5 py-3 fw-bold">Shop All Products</a>
+            <a href="/products?category_id=1" class="btn btn-secondary btn-lg px-5 py-3 fw-bold">Winter Collection</a>
           </div>
           <div class="hero-features d-flex flex-wrap gap-4">
             <div class="d-flex align-items-center hero-feature">
@@ -44,13 +44,7 @@
       </div>
       <div class="col-lg-6">
         <div class="hero-image-container">
-          <div class="hero-image-placeholder rounded-3 shadow-lg d-flex align-items-center justify-content-center">
-            <div class="text-center text-muted">
-              <i class="bi bi-image display-1 mb-3"></i>
-              <p class="h5">Hero Image Here</p>
-              <p class="small">Happy pets in Manitoba winter scene</p>
-            </div>
-          </div>
+            <%= image_tag "hero.png", alt: "Happy pets in Manitoba winter scene", class: "img-fluid rounded-3", style: "max-height: 100%; max-width: 100%;" %>
         </div>
       </div>
     </div>
@@ -409,8 +403,8 @@
       </div>
       <div class="col-lg-6">
         <form class="newsletter-form">
-          <div class="input-group newsletter-input-group">
-            <input type="email" class="form-control form-control-lg newsletter-input"
+          <div class="input-group">
+            <input type="email" class="form-control form-control-lg"
                    placeholder="Enter your email address" required>
             <button class="btn btn-light btn-lg fw-semibold px-4" type="submit">
               Subscribe
@@ -426,32 +420,9 @@
   </div>
 </section>
 
+
 <style>
-/* Newsletter Input Group Border Styling */
-.newsletter-input-group {
-  border: 2px solid var(--winnipets-primary);
-  border-radius: 8px;
-  background: rgba(255,255,255,0.95);
-  overflow: hidden;
-}
-
-.newsletter-input {
-  border: none;
-  border-right: 2px solid var(--winnipets-primary-light);
-  background: transparent;
-  color: var(--winnipets-primary-dark);
-  box-shadow: none;
-}
-
-.newsletter-input:focus {
-  border: none;
-  border-right: 2px solid var(--winnipets-accent);
-  outline: none;
-  background: #fff;
-  box-shadow: 0 0 0 2px var(--winnipets-secondary-light);
-}
-
-/* Existing styles ... */
+/* Color Variables */
 :root {
   --winnipets-primary: #8B4513;
   --winnipets-primary-light: #A0522D;
