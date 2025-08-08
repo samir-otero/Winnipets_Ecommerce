@@ -4,14 +4,14 @@ class CheckoutController < ApplicationController
 
   def new
     @guest_user = GuestUser.new
-    @address = Address.new
+    @address = Address.new(address_type: 'both')
     @cart_items = current_cart.cart_items
     @subtotal = current_cart.subtotal
   end
 
   def create
     @guest_user = GuestUser.new(guest_user_params)
-    @address = Address.new(address_params)
+    @address = Address.new(address_params.merge(address_type: 'both'))
     @cart_items = current_cart.cart_items
     @subtotal = current_cart.subtotal
 
@@ -152,9 +152,9 @@ class CheckoutController < ApplicationController
   end
 
   def calculate_shipping_cost(province, subtotal)
-    # Add your shipping logic here
+    # Shipping logic would go here
     # For now, returning 0 for free shipping
-    # You might want to add logic like:
+    # YTentative logic:
     # return 0 if subtotal > 100  # Free shipping over $100
     # return province.shipping_rate || 10  # Default shipping rate
     0
@@ -204,7 +204,7 @@ class CheckoutController < ApplicationController
   end
 
   def find_or_create_user(user_data, province)
-    existing_user = User.find_by(email: user_data['email'])
+  existing_user = User.find_by(email: user_data['email'])
 
     if existing_user
       # Update existing user info if needed
@@ -221,8 +221,8 @@ class CheckoutController < ApplicationController
         email: user_data['email'],
         phone: user_data['phone'],
         province: province,
-        password: SecureRandom.hex(10),
-        user_type: 'guest'
+        password: SecureRandom.hex(10)
+        # Removed user_type: 'guest' line
       )
     end
   end

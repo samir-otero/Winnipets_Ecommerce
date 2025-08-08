@@ -1,5 +1,5 @@
 class Address < ApplicationRecord
-  belongs_to :user
+  belongs_to :user, optional: true
   belongs_to :province
   has_many :orders_as_shipping, class_name: 'Order', foreign_key: 'shipping_address_id'
   has_many :orders_as_billing, class_name: 'Order', foreign_key: 'billing_address_id'

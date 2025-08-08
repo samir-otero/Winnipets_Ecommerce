@@ -1,7 +1,7 @@
 class User < ApplicationRecord
   has_secure_password
 
-  belongs_to :province
+  belongs_to :province, optional: true
   has_many :addresses, dependent: :destroy
   has_many :orders, dependent: :destroy
 
